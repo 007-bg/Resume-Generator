@@ -123,3 +123,52 @@ class GenerateCritiqueSerializer(serializers.Serializer):
         if not JobPosting.objects.filter(id=value).exists():
             raise serializers.ValidationError("Job posting not found.")
         return value
+
+
+# ===== Job Application Serializers =====
+
+from .models import JobApplication
+
+class JobApplicationSerializer(serializers.ModelSerializer):
+    """Full job application serializer."""
+    resume_title = serializers.SerializerMethodField()
+    days_since_applied = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = JobApplication
+        fields = [
+            'id', 'job_title', 'company', 'job_url', 'job_description',
+            'location', 'salary_range', 'job_type', 'resume', 'resume_title',
+            'status', 'applied_date', 'response_date', 'interview_date',
+            'offer_deadline', 'notes', 'contact_person', 'contact_email',
+            'metadata', 'priority', 'is_favorite', 'days_since_applied',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'days_since_applied']
+    
+    def get_resume_title(self, obj):
+        return obj.resume.title if obj.resume else None
+
+
+class JobApplicationListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for list views."""
+    resume_title = serializers.SerializerMethodField()
+    days_since_applied = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = JobApplication
+        fields = [
+            'id', 'job_title', 'company', 'location', 'status',
+            'applied_date', 'resume_title', 'priority', 'is_favorite',
+            'days_since_applied', 'updated_at'
+        ]
+    
+    def get_resume_title(self, obj):
+        return obj.resume.title if obj.resume else None
+
+
+class JobApplicationStatusSerializer(serializers.Serializer):
+    """Serializer for updating application status."""
+    status = serializers.ChoiceField(choices=JobApplication.Status.choices)
+    notes = serializers.CharField(required=False, allow_blank=True)
+

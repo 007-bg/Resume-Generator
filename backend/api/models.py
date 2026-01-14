@@ -151,3 +151,96 @@ class CritiqueResult(models.Model):
     
     def __str__(self):
         return f"Critique for {self.candidate.name}: {self.status}"
+
+
+class JobApplication(models.Model):
+    """
+    Tracks user's job applications with status workflow.
+    Links the job applied to with the resume used.
+    """
+    class Status(models.TextChoices):
+        SAVED = 'SAVED', 'Saved'
+        APPLIED = 'APPLIED', 'Applied'
+        SCREENING = 'SCREENING', 'Screening'
+        INTERVIEWING = 'INTERVIEWING', 'Interviewing'
+        TECHNICAL = 'TECHNICAL', 'Technical Round'
+        FINAL = 'FINAL', 'Final Round'
+        OFFER = 'OFFER', 'Offer Received'
+        ACCEPTED = 'ACCEPTED', 'Accepted'
+        REJECTED = 'REJECTED', 'Rejected'
+        WITHDRAWN = 'WITHDRAWN', 'Withdrawn'
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='job_applications')
+    
+    # Job details
+    job_title = models.CharField(max_length=255)
+    company = models.CharField(max_length=255)
+    job_url = models.URLField(blank=True)
+    job_description = models.TextField(blank=True)
+    location = models.CharField(max_length=255, blank=True)
+    salary_range = models.CharField(max_length=100, blank=True)
+    job_type = models.CharField(max_length=50, blank=True)  # Full-time, Contract, etc.
+    
+    # Resume used for this application
+    resume = models.ForeignKey(
+        Resume, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='applications'
+    )
+    
+    # Application status
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.SAVED)
+    
+    # Important dates
+    applied_date = models.DateField(null=True, blank=True)
+    response_date = models.DateField(null=True, blank=True)
+    interview_date = models.DateTimeField(null=True, blank=True)
+    offer_deadline = models.DateField(null=True, blank=True)
+    
+    # Notes and tracking
+    notes = models.TextField(blank=True)
+    contact_person = models.CharField(max_length=255, blank=True)
+    contact_email = models.EmailField(blank=True)
+    
+    # Application metadata stored as JSONB
+    metadata = models.JSONField(default=dict, blank=True)
+    """
+    {
+        "interview_rounds": [
+            {"date": "2024-01-15", "type": "phone", "notes": "..."},
+            {"date": "2024-01-20", "type": "technical", "notes": "..."}
+        ],
+        "offer_details": {"salary": "150000", "bonus": "10%"},
+        "rejection_reason": "...",
+        "referral": "John Doe"
+    }
+    """
+    
+    # Priority/interest level
+    priority = models.IntegerField(default=0)  # 0-5, higher = more interested
+    is_favorite = models.BooleanField(default=False)
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-updated_at', '-created_at']
+        indexes = [
+            models.Index(fields=['user', 'status']),
+            models.Index(fields=['user', '-updated_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.job_title} at {self.company} ({self.status})"
+    
+    @property
+    def days_since_applied(self):
+        if self.applied_date:
+            from django.utils import timezone
+            return (timezone.now().date() - self.applied_date).days
+        return None
+

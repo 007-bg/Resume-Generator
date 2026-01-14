@@ -1,15 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Briefcase, GraduationCap, Code, Award, Save, ArrowRight, Plus, Trash2 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectUser } from '../store/slices/authSlice';
+import {
+    fetchProfile,
+    updateGroundTruth,
+    setLocalGroundTruth,
+    selectGroundTruth,
+    selectProfileSaving,
+    selectProfileLoading
+} from '../store/slices/profileSlice';
 
 function ProfileSetup() {
-    const { api, user } = useAuth();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [step, setStep] = useState(1);
-    const [saving, setSaving] = useState(false);
+    const user = useSelector(selectUser);
+    const groundTruth = useSelector(selectGroundTruth);
+    const saving = useSelector(selectProfileSaving);
+    const loading = useSelector(selectProfileLoading);
 
-    const [groundTruth, setGroundTruth] = useState(user?.profile?.ground_truth || {
+    const [step, setStep] = useState(1);
+    const [localData, setLocalData] = useState({
         personal_info: {},
         summary: '',
         experience: [],
@@ -19,8 +31,18 @@ function ProfileSetup() {
         projects: []
     });
 
+    useEffect(() => {
+        dispatch(fetchProfile());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (groundTruth && Object.keys(groundTruth).length > 0) {
+            setLocalData({ ...localData, ...groundTruth });
+        }
+    }, [groundTruth]);
+
     const updateField = (section, field, value) => {
-        setGroundTruth(prev => ({
+        setLocalData(prev => ({
             ...prev,
             [section]: typeof field === 'string'
                 ? { ...prev[section], [field]: value }
@@ -36,21 +58,21 @@ function ProfileSetup() {
             projects: { name: '', description: '', url: '', technologies: [] }
         };
 
-        setGroundTruth(prev => ({
+        setLocalData(prev => ({
             ...prev,
             [section]: [...(prev[section] || []), templates[section]]
         }));
     };
 
     const removeItem = (section, index) => {
-        setGroundTruth(prev => ({
+        setLocalData(prev => ({
             ...prev,
             [section]: prev[section].filter((_, i) => i !== index)
         }));
     };
 
     const updateItem = (section, index, field, value) => {
-        setGroundTruth(prev => ({
+        setLocalData(prev => ({
             ...prev,
             [section]: prev[section].map((item, i) =>
                 i === index ? { ...item, [field]: value } : item
@@ -59,18 +81,14 @@ function ProfileSetup() {
     };
 
     const handleSave = async () => {
-        setSaving(true);
-        try {
-            await api.patch('/auth/profile/ground-truth/', groundTruth);
+        const result = await dispatch(updateGroundTruth(localData));
+
+        if (!result.error) {
             if (step < 5) {
                 setStep(step + 1);
             } else {
                 navigate('/dashboard');
             }
-        } catch (err) {
-            console.error('Save failed:', err);
-        } finally {
-            setSaving(false);
         }
     };
 
@@ -81,6 +99,15 @@ function ProfileSetup() {
         { icon: Code, label: 'Skills' },
         { icon: Award, label: 'Certifications' }
     ];
+
+    if (loading) {
+        return (
+            <div className="loading-screen">
+                <div className="spinner" style={{ width: 40, height: 40 }} />
+                <p>Loading profile...</p>
+            </div>
+        );
+    }
 
     return (
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
@@ -120,7 +147,7 @@ function ProfileSetup() {
                                 <input
                                     type="text"
                                     className="form-input"
-                                    value={groundTruth.personal_info.full_name || ''}
+                                    value={localData.personal_info.full_name || ''}
                                     onChange={e => updateField('personal_info', 'full_name', e.target.value)}
                                     placeholder="John Doe"
                                 />
@@ -130,7 +157,7 @@ function ProfileSetup() {
                                 <input
                                     type="email"
                                     className="form-input"
-                                    value={groundTruth.personal_info.email || user?.email || ''}
+                                    value={localData.personal_info.email || user?.email || ''}
                                     onChange={e => updateField('personal_info', 'email', e.target.value)}
                                 />
                             </div>
@@ -141,7 +168,7 @@ function ProfileSetup() {
                                 <input
                                     type="tel"
                                     className="form-input"
-                                    value={groundTruth.personal_info.phone || ''}
+                                    value={localData.personal_info.phone || ''}
                                     onChange={e => updateField('personal_info', 'phone', e.target.value)}
                                     placeholder="+1-555-0123"
                                 />
@@ -151,7 +178,7 @@ function ProfileSetup() {
                                 <input
                                     type="text"
                                     className="form-input"
-                                    value={groundTruth.personal_info.location || ''}
+                                    value={localData.personal_info.location || ''}
                                     onChange={e => updateField('personal_info', 'location', e.target.value)}
                                     placeholder="San Francisco, CA"
                                 />
@@ -163,7 +190,7 @@ function ProfileSetup() {
                                 <input
                                     type="url"
                                     className="form-input"
-                                    value={groundTruth.personal_info.linkedin || ''}
+                                    value={localData.personal_info.linkedin || ''}
                                     onChange={e => updateField('personal_info', 'linkedin', e.target.value)}
                                     placeholder="linkedin.com/in/johndoe"
                                 />
@@ -173,7 +200,7 @@ function ProfileSetup() {
                                 <input
                                     type="url"
                                     className="form-input"
-                                    value={groundTruth.personal_info.github || ''}
+                                    value={localData.personal_info.github || ''}
                                     onChange={e => updateField('personal_info', 'github', e.target.value)}
                                     placeholder="github.com/johndoe"
                                 />
@@ -183,7 +210,7 @@ function ProfileSetup() {
                             <label className="form-label">Professional Summary</label>
                             <textarea
                                 className="form-textarea"
-                                value={groundTruth.summary || ''}
+                                value={localData.summary || ''}
                                 onChange={e => updateField('summary', null, e.target.value)}
                                 placeholder="Brief overview of your professional background..."
                                 rows={4}
@@ -202,7 +229,7 @@ function ProfileSetup() {
                             </button>
                         </div>
 
-                        {(groundTruth.experience || []).map((exp, i) => (
+                        {(localData.experience || []).map((exp, i) => (
                             <div key={i} className="card mb-md" style={{ background: 'var(--bg-tertiary)' }}>
                                 <div className="flex items-center justify-between mb-md">
                                     <h4>Experience {i + 1}</h4>
@@ -263,7 +290,7 @@ function ProfileSetup() {
                             </div>
                         ))}
 
-                        {(groundTruth.experience || []).length === 0 && (
+                        {(localData.experience || []).length === 0 && (
                             <div className="empty-state">
                                 <p className="text-muted">No experience added yet</p>
                             </div>
@@ -281,7 +308,7 @@ function ProfileSetup() {
                             </button>
                         </div>
 
-                        {(groundTruth.education || []).map((edu, i) => (
+                        {(localData.education || []).map((edu, i) => (
                             <div key={i} className="card mb-md" style={{ background: 'var(--bg-tertiary)' }}>
                                 <div className="flex items-center justify-between mb-md">
                                     <h4>Education {i + 1}</h4>
@@ -345,7 +372,7 @@ function ProfileSetup() {
                             <input
                                 type="text"
                                 className="form-input"
-                                value={(groundTruth.skills?.technical || []).join(', ')}
+                                value={(localData.skills?.technical || []).join(', ')}
                                 onChange={e => updateField('skills', 'technical', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
                                 placeholder="Python, JavaScript, React, AWS (comma-separated)"
                             />
@@ -355,7 +382,7 @@ function ProfileSetup() {
                             <input
                                 type="text"
                                 className="form-input"
-                                value={(groundTruth.skills?.soft || []).join(', ')}
+                                value={(localData.skills?.soft || []).join(', ')}
                                 onChange={e => updateField('skills', 'soft', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
                                 placeholder="Leadership, Communication, Problem Solving"
                             />
@@ -365,7 +392,7 @@ function ProfileSetup() {
                             <input
                                 type="text"
                                 className="form-input"
-                                value={(groundTruth.skills?.languages || []).join(', ')}
+                                value={(localData.skills?.languages || []).join(', ')}
                                 onChange={e => updateField('skills', 'languages', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
                                 placeholder="English (Native), Spanish (Intermediate)"
                             />
@@ -383,7 +410,7 @@ function ProfileSetup() {
                             </button>
                         </div>
 
-                        {(groundTruth.certifications || []).map((cert, i) => (
+                        {(localData.certifications || []).map((cert, i) => (
                             <div key={i} className="card mb-md" style={{ background: 'var(--bg-tertiary)' }}>
                                 <div className="flex items-center justify-between mb-md">
                                     <h4>Certification {i + 1}</h4>
@@ -418,21 +445,11 @@ function ProfileSetup() {
 
                 {/* Navigation */}
                 <div className="flex items-center justify-between mt-xl">
-                    <button
-                        className="btn btn-secondary"
-                        onClick={() => setStep(step - 1)}
-                        disabled={step === 1}
-                    >
+                    <button className="btn btn-secondary" onClick={() => setStep(step - 1)} disabled={step === 1}>
                         Back
                     </button>
                     <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
-                        {saving ? (
-                            <span className="spinner" />
-                        ) : step < 5 ? (
-                            <>Save & Continue <ArrowRight size={18} /></>
-                        ) : (
-                            <>Complete Setup <Save size={18} /></>
-                        )}
+                        {saving ? <span className="spinner" /> : step < 5 ? <>Save & Continue <ArrowRight size={18} /></> : <>Complete Setup <Save size={18} /></>}
                     </button>
                 </div>
             </div>

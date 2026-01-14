@@ -113,7 +113,7 @@ function ResumeDashboard() {
                 </div>
             ) : resumes.length === 0 ? (
                 <div className="text-center py-20 bg-card rounded-xl border border-border shadow-sm">
-                    <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+                    <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
                         <Icon icon="mdi:file-document-outline" width="32" className="text-muted-foreground" />
                     </div>
                     <h3 className="text-xl font-semibold mb-2">No resumes yet</h3>

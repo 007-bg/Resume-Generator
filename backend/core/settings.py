@@ -24,6 +24,9 @@ SECRET_KEY = env('DJANGO_SECRET_KEY', default='dev-secret-key-change-in-producti
 DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', '.huggingface.co'])
 
+# Frontend Configuration
+FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:5173')
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -168,17 +171,17 @@ AUTHENTICATION_BACKENDS = [
 SOCIALACCOUNT_ADAPTER = 'accounts.adapters.FancyUsernameAdapter'
 
 # OAuth-only: No traditional signup/login
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False  # We generate fancy usernames automatically
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*']  # Email required (*)
 ACCOUNT_EMAIL_VERIFICATION = 'none'  # Skip email verification for OAuth
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 SOCIALACCOUNT_AUTO_SIGNUP = True  # Automatically create account on first OAuth login
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+SOCIALACCOUNT_LOGIN_ON_GET = True  # Bypass intermediate confirmation page
 
 # Redirect after OAuth login
-LOGIN_REDIRECT_URL = '/dashboard'
+LOGIN_REDIRECT_URL = '/api/auth/oauth/callback/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
 # Social auth providers

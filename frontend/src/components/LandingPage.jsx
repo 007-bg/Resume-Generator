@@ -52,9 +52,9 @@ function LandingPage() {
                     className="absolute inset-0 pointer-events-none"
                     style={{ transform: `translateY(${bgParallax}px)` }}
                 >
-                    <div className="absolute w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-coral rounded-full blur-[100px] md:blur-[200px] opacity-15 -top-20 -right-20 md:-top-48 md:-right-48" />
-                    <div className="absolute w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-sky rounded-full blur-[80px] md:blur-[150px] opacity-15 bottom-0 left-0" />
-                    <div className="absolute w-[250px] md:w-[500px] h-[250px] md:h-[500px] bg-cream rounded-full blur-[120px] md:blur-[180px] opacity-5 top-1/3 left-1/4" />
+                    <div className="absolute w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-primary rounded-full blur-[100px] md:blur-[200px] opacity-15 -top-20 -right-20 md:-top-48 md:-right-48" />
+                    <div className="absolute w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-blue-500 rounded-full blur-[80px] md:blur-[150px] opacity-15 bottom-0 left-0" />
+                    <div className="absolute w-[250px] md:w-[500px] h-[250px] md:h-[500px] bg-yellow-400 rounded-full blur-[120px] md:blur-[180px] opacity-5 top-1/3 left-1/4" />
                 </div>
 
                 {/* Main Content Layer (slight parallax) */}
@@ -65,20 +65,20 @@ function LandingPage() {
                     <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center w-full">
                         {/* Left: Text Content */}
                         <div className="text-center lg:text-left">
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-navy border border-sky/30 rounded-full text-xs md:text-sm text-sky mb-6 md:mb-8 mx-auto lg:mx-0">
-                                <Icon icon="mdi:star-four-points" className="text-coral" width="14" />
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-card border border-border/30 rounded-full text-xs md:text-sm text-muted-foreground mb-6 md:mb-8 mx-auto lg:mx-0">
+                                <Icon icon="mdi:star-four-points" className="text-primary" width="14" />
                                 AI-Powered Resume Generation
                             </div>
 
                             <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] mb-6 md:mb-8">
                                 Craft Your
                                 <br className="hidden md:block" />
-                                <span className="text-coral block md:inline"> Perfect Resume</span>
+                                <span className="text-primary block md:inline"> Perfect Resume</span>
                                 <br className="hidden md:block" />
                                 with AI
                             </h1>
 
-                            <p className="text-lg md:text-xl text-sky/80 max-w-xl mb-8 md:mb-12 leading-relaxed mx-auto lg:mx-0">
+                            <p className="text-lg md:text-xl text-muted-foreground/80 max-w-xl mb-8 md:mb-12 leading-relaxed mx-auto lg:mx-0">
                                 Let our multi-agent AI system create tailored, ATS-optimized resumes
                                 that get you noticed. Land your dream job faster.
                             </p>
@@ -110,10 +110,10 @@ function LandingPage() {
                                     {/* Resume Content Mockup */}
                                     <div className="p-6 h-full flex flex-col">
                                         <div className="flex items-center gap-4 mb-6">
-                                            <div className="w-16 h-16 rounded-full bg-coral" />
+                                            <div className="w-16 h-16 rounded-full bg-primary" />
                                             <div className="flex-1">
-                                                <div className="h-4 w-32 bg-navy-dark rounded mb-2" />
-                                                <div className="h-3 w-24 bg-sky/30 rounded" />
+                                                <div className="h-4 w-32 bg-background rounded mb-2" />
+                                                <div className="h-3 w-24 bg-blue-500/30 rounded" />
                                             </div>
                                         </div>
                                         <div className="mb-6">
@@ -122,27 +122,27 @@ function LandingPage() {
                                             <div className="h-3 w-3/4 bg-gray-200 rounded" />
                                         </div>
                                         <div className="mb-6">
-                                            <div className="h-4 w-24 bg-coral rounded mb-3" />
+                                            <div className="h-4 w-24 bg-primary rounded mb-3" />
                                             <div className="flex items-center gap-3 mb-2">
-                                                <div className="w-2 h-2 bg-coral rounded-full" />
+                                                <div className="w-2 h-2 bg-primary rounded-full" />
                                                 <div className="h-3 w-40 bg-gray-200 rounded" />
                                             </div>
                                             <div className="flex items-center gap-3 mb-2">
-                                                <div className="w-2 h-2 bg-coral rounded-full" />
+                                                <div className="w-2 h-2 bg-primary rounded-full" />
                                                 <div className="h-3 w-36 bg-gray-200 rounded" />
                                             </div>
                                             <div className="flex items-center gap-3">
-                                                <div className="w-2 h-2 bg-coral rounded-full" />
+                                                <div className="w-2 h-2 bg-primary rounded-full" />
                                                 <div className="h-3 w-32 bg-gray-200 rounded" />
                                             </div>
                                         </div>
                                         <div className="mt-auto">
-                                            <div className="h-4 w-16 bg-sky rounded mb-3" />
+                                            <div className="h-4 w-16 bg-blue-500 rounded mb-3" />
                                             <div className="flex flex-wrap gap-2">
-                                                <div className="h-6 w-16 bg-sky/20 rounded-full" />
-                                                <div className="h-6 w-20 bg-coral/20 rounded-full" />
-                                                <div className="h-6 w-14 bg-sky/20 rounded-full" />
-                                                <div className="h-6 w-18 bg-coral/20 rounded-full" />
+                                                <div className="h-6 w-16 bg-blue-500/20 rounded-full" />
+                                                <div className="h-6 w-20 bg-primary/20 rounded-full" />
+                                                <div className="h-6 w-14 bg-blue-500/20 rounded-full" />
+                                                <div className="h-6 w-18 bg-primary/20 rounded-full" />
                                             </div>
                                         </div>
                                     </div>
@@ -151,32 +151,32 @@ function LandingPage() {
 
                                 {/* Shadow Resumes */}
                                 <div
-                                    className="absolute top-4 -left-6 w-[340px] h-[440px] bg-navy rounded-lg"
+                                    className="absolute top-4 -left-6 w-[340px] h-[440px] bg-card rounded-lg"
                                     style={{ transform: 'rotateY(-20deg) rotateX(8deg)', zIndex: -1 }}
                                 />
                                 <div
-                                    className="absolute top-8 -left-12 w-[340px] h-[440px] bg-navy-dark rounded-lg"
+                                    className="absolute top-8 -left-12 w-[340px] h-[440px] bg-background rounded-lg"
                                     style={{ transform: 'rotateY(-25deg) rotateX(10deg)', zIndex: -2 }}
                                 />
 
                                 {/* Floating elements (fastest parallax) */}
                                 <div
-                                    className="absolute -top-8 -right-8 w-16 h-16 bg-coral rounded-lg shadow-lg flex items-center justify-center"
+                                    className="absolute -top-8 -right-8 w-16 h-16 bg-primary rounded-lg shadow-lg flex items-center justify-center"
                                     style={{ transform: `translateY(${floatParallax * 0.3}px)`, animation: 'float3d 3s ease-in-out infinite' }}
                                 >
                                     <Icon icon="mdi:robot" width="28" className="text-white" />
                                 </div>
                                 <div
-                                    className="absolute -bottom-4 -left-8 w-14 h-14 bg-sky rounded-lg shadow-lg flex items-center justify-center"
+                                    className="absolute -bottom-4 -left-8 w-14 h-14 bg-blue-500 rounded-lg shadow-lg flex items-center justify-center"
                                     style={{ transform: `translateY(${floatParallax * 0.4}px)`, animation: 'float3d 3.5s ease-in-out infinite reverse' }}
                                 >
-                                    <Icon icon="mdi:check-bold" width="24" className="text-navy-dark" />
+                                    <Icon icon="mdi:check-bold" width="24" className="text-background" />
                                 </div>
                                 <div
-                                    className="absolute top-1/2 -right-12 w-12 h-12 bg-cream rounded-full shadow-lg flex items-center justify-center"
+                                    className="absolute top-1/2 -right-12 w-12 h-12 bg-yellow-400 rounded-full shadow-lg flex items-center justify-center"
                                     style={{ transform: `translateY(${floatParallax * 0.2}px)`, animation: 'float3d 4s ease-in-out infinite' }}
                                 >
-                                    <Icon icon="mdi:file-document" width="20" className="text-navy-dark" />
+                                    <Icon icon="mdi:file-document" width="20" className="text-background" />
                                 </div>
                             </div>
                         </div>
@@ -189,25 +189,25 @@ function LandingPage() {
                     style={{ opacity: scrollIndicatorOpacity, pointerEvents: scrollIndicatorOpacity > 0.1 ? 'auto' : 'none' }}
                     onClick={scrollToFeatures}
                 >
-                    <span className="text-sky/60 text-[10px] md:text-xs uppercase tracking-[0.2em] font-medium">Scroll to explore</span>
-                    <div className="w-6 h-10 md:w-7 md:h-12 border-2 border-sky/40 rounded-full flex justify-center pt-2">
-                        <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-coral rounded-full animate-scroll-wheel" />
+                    <span className="text-muted-foreground/60 text-[10px] md:text-xs uppercase tracking-[0.2em] font-medium">Scroll to explore</span>
+                    <div className="w-6 h-10 md:w-7 md:h-12 border-2 border-border/40 rounded-full flex justify-center pt-2">
+                        <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-primary rounded-full animate-scroll-wheel" />
                     </div>
                 </div>
             </section>
 
             {/* Features Section */}
-            <section id="features" className="py-20 md:py-32 px-6 md:px-16 lg:px-24 bg-navy-dark relative w-full">
-                <div className="absolute top-0 left-0 right-0 h-px bg-sky/20" />
+            <section id="features" className="py-20 md:py-32 px-6 md:px-16 lg:px-24 bg-background relative w-full">
+                <div className="absolute top-0 left-0 right-0 h-px bg-blue-500/20" />
 
                 <div className="text-center max-w-3xl mx-auto mb-20">
-                    <span className="inline-block text-sm font-semibold text-coral uppercase tracking-widest mb-4">
+                    <span className="inline-block text-sm font-semibold text-primary uppercase tracking-widest mb-4">
                         Features
                     </span>
                     <h2 className="text-4xl md:text-5xl font-bold mb-6">
                         Everything You Need to Land Your Dream Job
                     </h2>
-                    <p className="text-lg text-sky/70">
+                    <p className="text-lg text-muted-foreground/70">
                         Powerful AI tools to create, optimize, and track your job applications
                     </p>
                 </div>
@@ -216,32 +216,32 @@ function LandingPage() {
                     {[
                         {
                             icon: 'mdi:robot',
-                            color: 'text-coral',
+                            color: 'text-primary',
                             title: 'AI Resume Generation',
                             description: 'Our multi-agent system crafts personalized resumes tailored to each job description, optimized for ATS systems.'
                         },
                         {
                             icon: 'mdi:chart-bar',
-                            color: 'text-sky',
+                            color: 'text-blue-400',
                             title: 'Job Match Analysis',
                             description: 'Get instant match scores and detailed analysis of how your profile aligns with job requirements.'
                         },
                         {
                             icon: 'mdi:clipboard-text',
-                            color: 'text-cream',
+                            color: 'text-yellow-400',
                             title: 'Application Tracker',
                             description: 'Track all your applications in one place with our intuitive Kanban board and analytics dashboard.'
                         }
                     ].map((feature, index) => (
                         <div
                             key={index}
-                            className="group p-8 bg-navy border border-sky/20 rounded-xl hover:-translate-y-2 hover:border-coral/50 transition-all duration-300"
+                            className="group p-8 bg-card border border-border/20 rounded-xl hover:-translate-y-2 hover:border-coral/50 transition-all duration-300"
                         >
-                            <div className="w-16 h-16 bg-navy-dark rounded-xl flex items-center justify-center mb-6 border border-sky/20">
+                            <div className="w-16 h-16 bg-background rounded-xl flex items-center justify-center mb-6 border border-border/20">
                                 <Icon icon={feature.icon} width="28" className={feature.color} />
                             </div>
                             <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                            <p className="text-sky/70 leading-relaxed">{feature.description}</p>
+                            <p className="text-muted-foreground/70 leading-relaxed">{feature.description}</p>
                         </div>
                     ))}
                 </div>
@@ -250,13 +250,13 @@ function LandingPage() {
             {/* How It Works Section */}
             <section className="py-32 px-8 md:px-16 lg:px-24 w-full">
                 <div className="text-center max-w-3xl mx-auto mb-20">
-                    <span className="inline-block text-sm font-semibold text-coral uppercase tracking-widest mb-4">
+                    <span className="inline-block text-sm font-semibold text-primary uppercase tracking-widest mb-4">
                         How It Works
                     </span>
                     <h2 className="text-4xl md:text-5xl font-bold mb-6">
                         Three Simple Steps to Success
                     </h2>
-                    <p className="text-lg text-sky/70">
+                    <p className="text-lg text-muted-foreground/70">
                         Get started in minutes and let AI do the heavy lifting
                     </p>
                 </div>
@@ -270,27 +270,27 @@ function LandingPage() {
                         { num: 3, icon: 'mdi:download', title: 'Download & Apply', desc: 'Get a tailored, ATS-optimized resume in seconds. Download as PDF and start applying!' }
                     ].map((step, index) => (
                         <div key={index} className="flex-1 text-center relative z-10">
-                            <div className="w-24 h-24 bg-coral rounded-full flex items-center justify-center text-3xl font-bold text-white mx-auto mb-8">
+                            <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center text-3xl font-bold text-white mx-auto mb-8">
                                 {step.num}
                             </div>
                             <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
-                            <p className="text-sky/70 max-w-sm mx-auto">{step.desc}</p>
+                            <p className="text-muted-foreground/70 max-w-sm mx-auto">{step.desc}</p>
                         </div>
                     ))}
                 </div>
             </section>
 
             {/* CTA Section */}
-            <section className="py-32 px-8 md:px-16 lg:px-24 bg-navy-dark text-center relative overflow-hidden w-full">
+            <section className="py-32 px-8 md:px-16 lg:px-24 bg-background text-center relative overflow-hidden w-full">
                 <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-coral rounded-full blur-[200px] opacity-10" />
+                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary rounded-full blur-[200px] opacity-10" />
                 </div>
 
                 <div className="max-w-4xl mx-auto relative z-10">
                     <h2 className="text-4xl md:text-6xl font-bold mb-6">
                         Ready to Transform Your Job Search?
                     </h2>
-                    <p className="text-xl text-sky/70 mb-12 max-w-2xl mx-auto">
+                    <p className="text-xl text-muted-foreground/70 mb-12 max-w-2xl mx-auto">
                         Join professionals who've landed their dream jobs with AI-powered resumes.
                     </p>
                     <Link to="/register" className="btn btn-primary text-xl px-12 py-5">
@@ -300,16 +300,16 @@ function LandingPage() {
             </section>
 
             {/* Footer */}
-            <footer className="py-16 px-8 md:px-16 lg:px-24 bg-navy border-t border-sky/10 w-full">
+            <footer className="py-16 px-8 md:px-16 lg:px-24 bg-card border-t border-border/10 w-full">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="text-2xl font-bold text-coral">Resume Agent</div>
-                    <p className="text-sky/50 text-sm">
+                    <div className="text-2xl font-bold text-primary">Resume Agent</div>
+                    <p className="text-muted-foreground/50 text-sm">
                         © {new Date().getFullYear()} Resume Agent. All rights reserved.
                     </p>
                     <div className="flex gap-8">
-                        <a href="#" className="text-sky/50 hover:text-coral transition-colors">Privacy</a>
-                        <a href="#" className="text-sky/50 hover:text-coral transition-colors">Terms</a>
-                        <a href="#" className="text-sky/50 hover:text-coral transition-colors">Contact</a>
+                        <a href="#" className="text-muted-foreground/50 hover:text-primary transition-colors">Privacy</a>
+                        <a href="#" className="text-muted-foreground/50 hover:text-primary transition-colors">Terms</a>
+                        <a href="#" className="text-muted-foreground/50 hover:text-primary transition-colors">Contact</a>
                     </div>
                 </div>
             </footer>

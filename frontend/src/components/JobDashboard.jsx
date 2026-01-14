@@ -82,7 +82,7 @@ function JobDashboard() {
                 </div>
             ) : jobs.length === 0 ? (
                 <div className="text-center py-20 bg-card rounded-xl border border-border">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-secondary mb-4">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
                         <Icon icon="mdi:briefcase-outline" className="text-muted-foreground w-8 h-8" />
                     </div>
                     <h3 className="text-lg font-semibold mb-2">No jobs yet</h3>

@@ -11,15 +11,17 @@
     --popover: 0.216 0.006 56.043;
     --popover-foreground: 1 0 0;
     --primary: 0.809 0.105 251.813;
-    --primary-foreground: 0.216 0.006 56.043;
+    --primary-foreground: 0.1 0 0;
     --secondary: 1 0 0;
-    --secondary-foreground: 1 0 0;
+    /* Solid White */
+    --secondary-foreground: 0 0 0;
+    /* Black Text */
     --muted: 0.268 0.007 34.298;
     --muted-foreground: 0.97 0.001 106.424;
     --accent: 0.268 0.007 34.298;
     --accent-foreground: 1 0 0;
     --destructive: 0.577 0.245 27.325;
-    --destructive-foreground: 0.704 0.191 22.216;
+    --destructive-foreground: 1 0 0;
     --border: 1 0 0 / 0.125;
     --input: 1 0 0 / 0.2;
     --ring: 0.809 0.105 251.813;
@@ -34,15 +36,15 @@
     --popover: 0.216 0.006 56.043;
     --popover-foreground: 1 0 0;
     --primary: 0.809 0.105 251.813;
-    --primary-foreground: 0.216 0.006 56.043;
+    --primary-foreground: 0.1 0 0;
     --secondary: 1 0 0;
-    --secondary-foreground: 1 0 0;
+    --secondary-foreground: 0 0 0;
     --muted: 0.268 0.007 34.298;
     --muted-foreground: 0.97 0.001 106.424;
     --accent: 0.268 0.007 34.298;
     --accent-foreground: 1 0 0;
     --destructive: 0.577 0.245 27.325;
-    --destructive-foreground: 0.704 0.191 22.216;
+    --destructive-foreground: 1 0 0;
     --border: 1 0 0 / 0.125;
     --input: 1 0 0 / 0.2;
     --ring: 0.809 0.105 251.813;
@@ -79,5 +81,9 @@
 
   .text-gradient-accent {
     @apply text-primary font-bold;
+  }
+
+  .spinner {
+    @apply animate-spin rounded-full border-2 border-current border-t-transparent;
   }
 }

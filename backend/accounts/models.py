@@ -112,16 +112,25 @@ class UserProfile(models.Model):
         """Calculate profile completeness percentage."""
         ground_truth = self.ground_truth or {}
         
-        sections = [
-            'personal_info',
-            'summary',
-            'experience',
-            'education',
-            'skills'
-        ]
+        # Define required sections and their specific checks
+        checks = {
+            'personal_info': lambda gt: bool(
+                gt.get('personal_info', {}).get('full_name') and 
+                gt.get('personal_info', {}).get('email')
+            ),
+            'summary': lambda gt: bool(gt.get('summary')),
+            'experience': lambda gt: bool(gt.get('experience') and len(gt.get('experience')) > 0),
+            'education': lambda gt: bool(gt.get('education') and len(gt.get('education')) > 0),
+            'skills': lambda gt: bool(
+                gt.get('skills', {}).get('technical') and 
+                len(gt.get('skills', {}).get('technical')) > 0
+            )
+        }
         
-        filled = sum(1 for s in sections if ground_truth.get(s))
-        self.completion_percentage = int((filled / len(sections)) * 100)
+        filled_sections = sum(1 for section, check in checks.items() if check(ground_truth))
+        total_sections = len(checks)
+        
+        self.completion_percentage = int((filled_sections / total_sections) * 100)
         self.is_complete = self.completion_percentage == 100
         return self.completion_percentage
 

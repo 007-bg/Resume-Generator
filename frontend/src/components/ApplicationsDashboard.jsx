@@ -3,6 +3,25 @@ import { Link } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
+    DndContext,
+    closestCorners,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragOverlay,
+    defaultDropAnimationSideEffects,
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+    useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+import {
     fetchApplications,
     fetchApplicationStats,
     updateApplicationStatus,
@@ -75,7 +94,7 @@ function ApplicationsDashboard() {
     };
 
     return (
-        <div className="container mx-auto py-8 px-4 max-w-7xl">
+        <div className="w-full py-6 px-6">
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Job Applications</h1>
@@ -124,7 +143,7 @@ function ApplicationsDashboard() {
                         ))}
                     </select>
                 </div>
-                <div className="flex items-center bg-secondary rounded-lg p-1">
+                <div className="flex items-center bg-muted rounded-lg p-1">
                     <button
                         className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${viewMode === 'list' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                         onClick={() => dispatch(setViewMode('list'))}
@@ -251,51 +270,228 @@ function ApplicationRow({ app, onStatusUpdate, onToggleFavorite, onDelete, onEdi
 }
 
 function KanbanView({ applications, onStatusUpdate }) {
-    const columns = STATUS_ORDER;
+    // Group applications by status
+    const [columns, setColumns] = useState(STATUS_ORDER.reduce((acc, status) => {
+        acc[status] = [];
+        return acc;
+    }, {}));
+
+    const [activeId, setActiveId] = useState(null);
+
+    // Sync Redux state to local columns
+    useEffect(() => {
+        const newColumns = STATUS_ORDER.reduce((acc, status) => {
+            acc[status] = applications
+                .filter(app => app.status === status)
+                .sort((a, b) => new Date(b.applied_date) - new Date(a.applied_date)); // Sort by date desc
+            return acc;
+        }, {});
+        setColumns(newColumns);
+    }, [applications]);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 5, // Prevent accidental drags
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    const findContainer = (id) => {
+        if (id in columns) return id;
+        return Object.keys(columns).find(key => columns[key].find(item => item.id.toString() === id.toString()));
+    };
+
+    const handleDragStart = (event) => {
+        setActiveId(event.active.id);
+    };
+
+    const handleDragOver = (event) => {
+        const { active, over } = event;
+        if (!over) return;
+
+        const activeId = active.id;
+        const overId = over.id;
+
+        const activeContainer = findContainer(activeId);
+        const overContainer = findContainer(overId);
+
+        if (!activeContainer || !overContainer || activeContainer === overContainer) {
+            return;
+        }
+
+        setColumns((prev) => {
+            const activeItems = prev[activeContainer];
+            const overItems = prev[overContainer];
+            const activeIndex = activeItems.findIndex(item => item.id.toString() === activeId.toString());
+            const overIndex = overItems.findIndex(item => item.id.toString() === overId.toString());
+
+            let newIndex;
+            if (overId in prev) {
+                // We're over a container
+                newIndex = overItems.length + 1;
+            } else {
+                const isBelowOverItem =
+                    over &&
+                    active.rect.current.translated &&
+                    active.rect.current.translated.top > over.rect.top + over.rect.height;
+
+                const modifier = isBelowOverItem ? 1 : 0;
+                newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+            }
+
+            return {
+                ...prev,
+                [activeContainer]: [
+                    ...prev[activeContainer].filter((item) => item.id.toString() !== activeId.toString()),
+                ],
+                [overContainer]: [
+                    ...prev[overContainer].slice(0, newIndex),
+                    activeItems[activeIndex],
+                    ...prev[overContainer].slice(newIndex, prev[overContainer].length),
+                ],
+            };
+        });
+    };
+
+    const handleDragEnd = (event) => {
+        const { active, over } = event;
+        const activeContainer = findContainer(active.id);
+        const overContainer = findContainer(over ? over.id : null);
+
+        if (
+            activeContainer &&
+            overContainer &&
+            (activeContainer !== overContainer || (over && active.id !== over.id))
+        ) {
+            // Update Backend
+            const item = columns[overContainer]?.find(i => i.id.toString() === active.id.toString()) ||
+                columns[activeContainer]?.find(i => i.id.toString() === active.id.toString());
+
+            if (item && activeContainer !== overContainer) {
+                onStatusUpdate(item.id, overContainer);
+            }
+        }
+
+        setActiveId(null);
+    };
+
+    const dropAnimation = {
+        sideEffects: defaultDropAnimationSideEffects({
+            styles: {
+                active: {
+                    opacity: '0.4',
+                },
+            },
+        }),
+    };
+
+    const activeItem = activeId ? Object.values(columns).flat().find(item => item.id.toString() === activeId.toString()) : null;
 
     return (
-        <div className="flex gap-4 overflow-x-auto pb-4">
-            {columns.map(status => {
-                const statusApps = applications.filter(app => app.status === status);
-                const config = STATUS_CONFIG[status];
+        <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+        >
+            <div className="flex gap-4 overflow-x-auto pb-6 pt-2 h-[calc(100vh-280px)]">
+                {STATUS_ORDER.map(status => (
+                    <DroppableContainer
+                        key={status}
+                        id={status}
+                        label={STATUS_CONFIG[status].label}
+                        color={STATUS_CONFIG[status].bg}
+                        items={columns[status] || []}
+                    />
+                ))}
+            </div>
+            <DragOverlay dropAnimation={dropAnimation}>
+                {activeItem ? <SortableItem app={activeItem} overlay /> : null}
+            </DragOverlay>
+        </DndContext>
+    );
+}
 
-                return (
-                    <div key={status} className="min-w-[300px] w-[300px] flex-shrink-0 bg-secondary/30 rounded-xl p-4 border border-border">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="font-semibold text-sm flex items-center gap-2">
-                                <span className={`w-2 h-2 rounded-full ${config.bg.replace('/10', '')}`} />
-                                {config.label}
-                            </h3>
-                            <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
-                                {statusApps.length}
-                            </span>
-                        </div>
+function DroppableContainer({ id, label, color, items }) {
+    const { setNodeRef } = useSortable({
+        id: id,
+        data: {
+            type: 'container',
+            children: items,
+        },
+    });
 
-                        <div className="space-y-3">
-                            {statusApps.map(app => (
-                                <div key={app.id} className="card p-3 bg-card hover:border-primary/50 cursor-grab active:cursor-grabbing">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h4 className="font-medium text-sm">{app.position}</h4>
-                                        {app.is_favorite && <Icon icon="mdi:star" className="text-yellow-400" width="14" />}
-                                    </div>
-                                    <p className="text-xs text-muted-foreground mb-2">{app.company_name}</p>
-                                    <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                                        <span>{new Date(app.applied_date).toLocaleDateString()}</span>
-                                        <div className="flex gap-1">
-                                            {/* Quick Actions if needed */}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                            {statusApps.length === 0 && (
-                                <div className="text-center py-8 border-2 border-dashed border-border rounded-lg">
-                                    <p className="text-xs text-muted-foreground">No applications</p>
-                                </div>
-                            )}
-                        </div>
+    return (
+        <div
+            ref={setNodeRef}
+            className="min-w-[320px] flex-shrink-0 flex-1 bg-secondary/20 backdrop-blur-sm rounded-xl p-3 border border-border/50 flex flex-col h-full"
+        >
+            <div className="flex items-center justify-between mb-3 px-1 sticky top-0 md:static">
+                <h3 className="font-semibold text-sm flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${color.replace('/10', '')}`} />
+                    {label}
+                </h3>
+                <span className="text-xs font-medium text-muted-foreground bg-secondary/50 px-2 py-0.5 rounded-full">
+                    {items.length}
+                </span>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-3 min-h-[100px] custom-scrollbar px-1 pb-2">
+                <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
+                    {items.map((app) => (
+                        <SortableItem key={app.id} app={app} />
+                    ))}
+                </SortableContext>
+                {items.length === 0 && (
+                    <div className="h-24 flex flex-col items-center justify-center border-2 border-dashed border-border/50 rounded-lg opacity-50">
+                        <Icon icon="mdi:clipboard-text-outline" className="text-muted-foreground mb-1" width="24" />
+                        <span className="text-xs text-muted-foreground">Empty</span>
                     </div>
-                );
-            })}
+                )}
+            </div>
+        </div>
+    );
+}
+
+function SortableItem({ app, overlay }) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: app.id });
+
+    const style = {
+        transform: CSS.Translate.toString(transform),
+        transition,
+        zIndex: isDragging ? 10 : 'auto',
+    };
+
+    const cardClass = overlay
+        ? "card p-4 bg-card shadow-xl border-primary/50 cursor-grabbing border rotate-2 scale-105"
+        : `card p-4 bg-card/80 hover:bg-card hover:shadow-md cursor-grab active:cursor-grabbing border-border/50 hover:border-border transition-all group ${isDragging ? 'opacity-30' : ''}`;
+
+    return (
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners} className={cardClass}>
+            <div className="flex justify-between items-start mb-2">
+                <h4 className="font-medium text-sm text-foreground line-clamp-1 group-hover:text-primary transition-colors">{app.position}</h4>
+                {app.is_favorite && <Icon icon="mdi:star" className="text-yellow-400 flex-shrink-0" width="14" />}
+            </div>
+            <p className="text-xs text-muted-foreground mb-3 font-medium">{app.company_name}</p>
+
+            <div className="flex items-center justify-between mt-auto">
+                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground bg-secondary/40 px-2 py-1 rounded">
+                    <Icon icon="mdi:calendar" width="12" />
+                    <span>{new Date(app.applied_date).toLocaleDateString()}</span>
+                </div>
+            </div>
         </div>
     );
 }

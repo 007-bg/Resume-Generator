@@ -20,16 +20,16 @@ export default {
             colors: {
                 border: "oklch(var(--border))", // Has internal opacity
                 input: "oklch(var(--input))",   // Has internal opacity
+                secondary: {
+                    DEFAULT: "oklch(var(--secondary) / <alpha-value>)", // Standard alpha support
+                    foreground: "oklch(var(--secondary-foreground) / <alpha-value>)",
+                },
                 ring: "oklch(var(--ring) / <alpha-value>)",
                 background: "oklch(var(--background) / <alpha-value>)",
                 foreground: "oklch(var(--foreground) / <alpha-value>)",
                 primary: {
                     DEFAULT: "oklch(var(--primary) / <alpha-value>)",
                     foreground: "oklch(var(--primary-foreground) / <alpha-value>)",
-                },
-                secondary: {
-                    DEFAULT: "oklch(var(--secondary) / <alpha-value>)",
-                    foreground: "oklch(var(--secondary-foreground) / <alpha-value>)",
                 },
                 destructive: {
                     DEFAULT: "oklch(var(--destructive) / <alpha-value>)",

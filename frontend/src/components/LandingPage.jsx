@@ -1,23 +1,25 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import {
+    FiCpu, FiBarChart2, FiClipboard, FiStar, FiCheck, FiFileText,
+    FiUser, FiBriefcase, FiDownload, FiChevronDown
+} from 'react-icons/fi';
 
 /**
  * Landing Page Component
- * Clean mono/dual color design with minimal gradients
+ * Parallax hero section with clean mono/dual color design
  * Color palette: Coral (primary), Sky (secondary), Navy (background)
  */
 function LandingPage() {
-    const [scrollOpacity, setScrollOpacity] = useState(1);
+    const [scrollY, setScrollY] = useState(0);
+    const heroRef = useRef(null);
 
     useEffect(() => {
         const handleScroll = () => {
-            const scrollY = window.scrollY;
-            // Fade out within the first 300px of scrolling
-            const newOpacity = Math.max(0, 1 - scrollY / 300);
-            setScrollOpacity(newOpacity);
+            setScrollY(window.scrollY);
         };
 
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
@@ -28,50 +30,78 @@ function LandingPage() {
         }
     };
 
+    // Parallax calculations (only active in hero section)
+    const heroHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
+    const isInHero = scrollY < heroHeight;
+    const parallaxProgress = Math.min(scrollY / heroHeight, 1);
+
+    // Different speeds for parallax layers
+    const bgParallax = scrollY * 0.3;           // Background moves slowest
+    const contentParallax = scrollY * 0.1;      // Content moves slightly
+    const mockupParallax = scrollY * 0.5;       // Mockup moves faster
+    const floatParallax = scrollY * 0.7;        // Floating elements move fastest
+
+    // Fade out scroll indicator
+    const scrollIndicatorOpacity = Math.max(0, 1 - scrollY / 300);
+
     return (
         <div className="w-full">
-            {/* Hero Section */}
-            <section className="relative min-h-screen w-full flex items-center overflow-hidden">
-                {/* Subtle background accent - only slight glow */}
-                <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute w-[600px] h-[600px] bg-coral rounded-full blur-[200px] opacity-10 -top-48 -right-48" />
-                    <div className="absolute w-[400px] h-[400px] bg-sky rounded-full blur-[150px] opacity-10 bottom-0 left-0" />
+            {/* Hero Section with Parallax */}
+            <section
+                ref={heroRef}
+                className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden"
+            >
+                {/* Parallax Background Layer (slowest) */}
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ transform: `translateY(${bgParallax}px)` }}
+                >
+                    <div className="absolute w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-coral rounded-full blur-[100px] md:blur-[200px] opacity-15 -top-20 -right-20 md:-top-48 md:-right-48" />
+                    <div className="absolute w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-sky rounded-full blur-[80px] md:blur-[150px] opacity-15 bottom-0 left-0" />
+                    <div className="absolute w-[250px] md:w-[500px] h-[250px] md:h-[500px] bg-cream rounded-full blur-[120px] md:blur-[180px] opacity-5 top-1/3 left-1/4" />
                 </div>
 
-                {/* Main Content */}
-                <div className="relative z-10 w-full px-8 md:px-16 lg:px-24 py-20">
-                    <div className="grid lg:grid-cols-2 gap-16 items-center">
+                {/* Main Content Layer (slight parallax) */}
+                <div
+                    className="relative z-10 w-full px-6 md:px-16 lg:px-24 py-12 md:py-20 flex-1 flex items-center"
+                    style={{ transform: `translateY(${contentParallax}px)` }}
+                >
+                    <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center w-full">
                         {/* Left: Text Content */}
-                        <div className="text-left">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-navy border border-sky/30 rounded-full text-sm text-sky mb-8">
-                                ✨ AI-Powered Resume Generation
+                        <div className="text-center lg:text-left">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-navy border border-sky/30 rounded-full text-xs md:text-sm text-sky mb-6 md:mb-8 mx-auto lg:mx-0">
+                                <FiStar className="text-coral" size={14} />
+                                AI-Powered Resume Generation
                             </div>
 
-                            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] mb-8">
+                            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] mb-6 md:mb-8">
                                 Craft Your
-                                <br />
-                                <span className="text-coral">Perfect Resume</span>
-                                <br />
+                                <br className="hidden md:block" />
+                                <span className="text-coral block md:inline"> Perfect Resume</span>
+                                <br className="hidden md:block" />
                                 with AI
                             </h1>
 
-                            <p className="text-xl text-sky/80 max-w-xl mb-12 leading-relaxed">
+                            <p className="text-lg md:text-xl text-sky/80 max-w-xl mb-8 md:mb-12 leading-relaxed mx-auto lg:mx-0">
                                 Let our multi-agent AI system create tailored, ATS-optimized resumes
                                 that get you noticed. Land your dream job faster.
                             </p>
 
-                            <div className="flex gap-4 flex-wrap">
-                                <Link to="/register" className="btn btn-primary text-lg px-10 py-4">
+                            <div className="flex gap-4 flex-wrap justify-center lg:justify-start">
+                                <Link to="/register" className="btn btn-primary text-base md:text-lg px-8 md:px-10 py-3 md:py-4">
                                     Get Started Free
                                 </Link>
-                                <Link to="/login" className="btn btn-secondary text-lg px-10 py-4">
+                                <Link to="/login" className="btn btn-secondary text-base md:text-lg px-8 md:px-10 py-3 md:py-4">
                                     Sign In
                                 </Link>
                             </div>
                         </div>
 
-                        {/* Right: 3D Resume Mockup */}
-                        <div className="relative flex items-center justify-center lg:justify-end">
+                        {/* Right: 3D Resume Mockup (faster parallax) */}
+                        <div
+                            className="relative hidden lg:flex items-center justify-center lg:justify-end"
+                            style={{ transform: `translateY(${mockupParallax}px)` }}
+                        >
                             <div className="relative" style={{ perspective: '1000px' }}>
                                 {/* Main Resume */}
                                 <div
@@ -141,36 +171,45 @@ function LandingPage() {
                                     style={{ transform: 'rotateY(-25deg) rotateX(10deg)', zIndex: -2 }}
                                 />
 
-                                {/* Floating elements */}
-                                <div className="absolute -top-8 -right-8 w-16 h-16 bg-coral rounded-lg shadow-lg flex items-center justify-center text-2xl animate-bounce" style={{ animationDuration: '3s' }}>
-                                    🤖
+                                {/* Floating elements (fastest parallax) */}
+                                <div
+                                    className="absolute -top-8 -right-8 w-16 h-16 bg-coral rounded-lg shadow-lg flex items-center justify-center"
+                                    style={{ transform: `translateY(${floatParallax * 0.3}px)`, animation: 'float3d 3s ease-in-out infinite' }}
+                                >
+                                    <FiCpu size={28} className="text-white" />
                                 </div>
-                                <div className="absolute -bottom-4 -left-8 w-14 h-14 bg-sky rounded-lg shadow-lg flex items-center justify-center text-xl animate-bounce" style={{ animationDuration: '3.5s', animationDelay: '0.5s' }}>
-                                    ✓
+                                <div
+                                    className="absolute -bottom-4 -left-8 w-14 h-14 bg-sky rounded-lg shadow-lg flex items-center justify-center"
+                                    style={{ transform: `translateY(${floatParallax * 0.4}px)`, animation: 'float3d 3.5s ease-in-out infinite reverse' }}
+                                >
+                                    <FiCheck size={24} className="text-navy-dark" />
                                 </div>
-                                <div className="absolute top-1/2 -right-12 w-12 h-12 bg-cream rounded-full shadow-lg flex items-center justify-center text-lg animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
-                                    📄
+                                <div
+                                    className="absolute top-1/2 -right-12 w-12 h-12 bg-cream rounded-full shadow-lg flex items-center justify-center"
+                                    style={{ transform: `translateY(${floatParallax * 0.2}px)`, animation: 'float3d 4s ease-in-out infinite' }}
+                                >
+                                    <FiFileText size={20} className="text-navy-dark" />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Scroll indicator */}
+                {/* Scroll indicator - fixed to viewport */}
                 <div
-                    className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 cursor-pointer z-20 transition-all duration-300 hover:scale-105"
-                    style={{ opacity: scrollOpacity, pointerEvents: scrollOpacity > 0 ? 'auto' : 'none' }}
+                    className="fixed bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer z-50 transition-all duration-300 hover:scale-105"
+                    style={{ opacity: scrollIndicatorOpacity, pointerEvents: scrollIndicatorOpacity > 0.1 ? 'auto' : 'none' }}
                     onClick={scrollToFeatures}
                 >
-                    <span className="text-sky/60 text-xs uppercase tracking-[0.2em] font-medium">Scroll to explore</span>
-                    <div className="w-[30px] h-[50px] border-2 border-sky/30 rounded-full p-2 flex justify-center">
-                        <div className="w-1.5 h-1.5 bg-coral rounded-full animate-scroll-wheel" />
+                    <span className="text-sky/60 text-[10px] md:text-xs uppercase tracking-[0.2em] font-medium">Scroll to explore</span>
+                    <div className="w-6 h-10 md:w-7 md:h-12 border-2 border-sky/40 rounded-full flex justify-center pt-2">
+                        <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-coral rounded-full animate-scroll-wheel" />
                     </div>
                 </div>
             </section>
 
-            {/* Features Section */}
-            <section id="features" className="py-32 px-8 md:px-16 lg:px-24 bg-navy-dark relative w-full">
+            {/* Features Section - No Parallax */}
+            <section id="features" className="py-20 md:py-32 px-6 md:px-16 lg:px-24 bg-navy-dark relative w-full">
                 <div className="absolute top-0 left-0 right-0 h-px bg-sky/20" />
 
                 <div className="text-center max-w-3xl mx-auto mb-20">
@@ -188,17 +227,17 @@ function LandingPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[
                         {
-                            icon: '🤖',
+                            icon: <FiCpu size={28} className="text-coral" />,
                             title: 'AI Resume Generation',
                             description: 'Our multi-agent system crafts personalized resumes tailored to each job description, optimized for ATS systems.'
                         },
                         {
-                            icon: '📊',
+                            icon: <FiBarChart2 size={28} className="text-sky" />,
                             title: 'Job Match Analysis',
                             description: 'Get instant match scores and detailed analysis of how your profile aligns with job requirements.'
                         },
                         {
-                            icon: '📋',
+                            icon: <FiClipboard size={28} className="text-cream" />,
                             title: 'Application Tracker',
                             description: 'Track all your applications in one place with our intuitive Kanban board and analytics dashboard.'
                         }
@@ -232,7 +271,7 @@ function LandingPage() {
                 </div>
 
                 <div className="flex flex-col lg:flex-row justify-between gap-8 lg:gap-12 relative">
-                    {/* Connecting line - this is ONE gradient accent */}
+                    {/* Connecting line - one gradient accent */}
                     <div className="hidden lg:block absolute top-12 left-[15%] right-[15%] h-1 bg-gradient-to-r from-coral via-cream to-sky z-0 rounded-full" />
 
                     {[
@@ -251,7 +290,7 @@ function LandingPage() {
                 </div>
             </section>
 
-            {/* CTA Section - solid background */}
+            {/* CTA Section */}
             <section className="py-32 px-8 md:px-16 lg:px-24 bg-navy-dark text-center relative overflow-hidden w-full">
                 <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-coral rounded-full blur-[200px] opacity-10" />
@@ -309,15 +348,6 @@ function LandingPage() {
 
             .animate-scroll-wheel {
                 animation: scroll-wheel 1.5s ease-in-out infinite;
-            }
-            
-            @keyframes fade-in {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            
-            .animate-fade-in {
-                animation: fade-in 0.8s ease-out;
             }
         `}</style>
         </div>

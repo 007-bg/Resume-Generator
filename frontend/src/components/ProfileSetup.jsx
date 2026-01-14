@@ -35,11 +35,12 @@ function ProfileSetup() {
         dispatch(fetchProfile());
     }, [dispatch]);
 
-    useEffect(() => {
-        if (groundTruth && Object.keys(groundTruth).length > 0) {
-            setLocalData({ ...localData, ...groundTruth });
-        }
-    }, [groundTruth]);
+    // ✅ Better: Reset localData when groundTruth changes (during render, not Effect)
+    const [prevGroundTruth, setPrevGroundTruth] = useState(null);
+    if (groundTruth !== prevGroundTruth && groundTruth && Object.keys(groundTruth).length > 0) {
+        setPrevGroundTruth(groundTruth);
+        setLocalData(prev => ({ ...prev, ...groundTruth }));
+    }
 
     const updateField = (section, field, value) => {
         setLocalData(prev => ({
@@ -122,8 +123,8 @@ function ProfileSetup() {
                     <div key={i} className="flex items-center">
                         <button
                             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${step === i + 1
-                                    ? 'bg-coral text-white'
-                                    : 'bg-navy text-sky border border-sky/20 hover:border-coral'
+                                ? 'bg-coral text-white'
+                                : 'bg-navy text-sky border border-sky/20 hover:border-coral'
                                 }`}
                             onClick={() => setStep(i + 1)}
                         >

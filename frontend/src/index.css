@@ -2,190 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import Inter font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-/* Base Styles */
 @layer base {
   :root {
-    --cream: #F8E9A1;
-    --coral: #F76C6C;
-    --coral-dark: #e55555;
-    --sky: #A8D0E6;
-    --sky-dark: #8bbdd9;
-    --navy: #374785;
-    --navy-dark: #24305E;
+    --background: 0.147 0.004 49.25;
+    --foreground: 1 0 0;
+    --card: 0.216 0.006 56.043;
+    --card-foreground: 1 0 0;
+    --popover: 0.216 0.006 56.043;
+    --popover-foreground: 1 0 0;
+    --primary: 0.809 0.105 251.813;
+    --primary-foreground: 0.216 0.006 56.043;
+    --secondary: 1 0 0;
+    --secondary-foreground: 1 0 0;
+    --muted: 0.268 0.007 34.298;
+    --muted-foreground: 0.97 0.001 106.424;
+    --accent: 0.268 0.007 34.298;
+    --accent-foreground: 1 0 0;
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 0.704 0.191 22.216;
+    --border: 1 0 0 / 0.125;
+    --input: 1 0 0 / 0.2;
+    --ring: 0.809 0.105 251.813;
+    --radius: 0.625rem;
   }
 
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    @apply bg-dark-primary text-white font-sans antialiased;
-    background-color: #1a1f3c;
-    min-height: 100vh;
-  }
-
-  ::selection {
-    background: rgba(247, 108, 108, 0.3);
-    color: white;
-  }
-
-  /* Scrollbar styling */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #24305E;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #374785;
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #F76C6C;
+  .dark {
+    --background: 0.147 0.004 49.25;
+    --foreground: 1 0 0;
+    --card: 0.216 0.006 56.043;
+    --card-foreground: 1 0 0;
+    --popover: 0.216 0.006 56.043;
+    --popover-foreground: 1 0 0;
+    --primary: 0.809 0.105 251.813;
+    --primary-foreground: 0.216 0.006 56.043;
+    --secondary: 1 0 0;
+    --secondary-foreground: 1 0 0;
+    --muted: 0.268 0.007 34.298;
+    --muted-foreground: 0.97 0.001 106.424;
+    --accent: 0.268 0.007 34.298;
+    --accent-foreground: 1 0 0;
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 0.704 0.191 22.216;
+    --border: 1 0 0 / 0.125;
+    --input: 1 0 0 / 0.2;
+    --ring: 0.809 0.105 251.813;
   }
 }
 
-/* Component Styles */
-@layer components {
-
-  /* Text - only ONE gradient accent for hero title */
-  .text-gradient-accent {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #F76C6C 0%, #F8E9A1 100%);
+@layer base {
+  * {
+    @apply border-border;
   }
 
-  /* Buttons - solid colors, no gradients */
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom Utilities */
+@layer components {
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded font-medium text-sm transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 h-9 px-4 py-2;
   }
 
   .btn-primary {
-    @apply bg-coral text-white hover:bg-coral-dark;
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-2px);
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 shadow;
   }
 
   .btn-secondary {
-    @apply bg-navy text-sky hover:bg-navy-dark border border-sky/30 hover:border-sky/50;
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm;
   }
 
-  .btn-ghost {
-    @apply bg-transparent text-sky hover:text-white hover:bg-white/10;
-  }
-
-  .btn-cream {
-    @apply bg-cream text-navy-dark font-semibold hover:bg-opacity-90;
-  }
-
-  .btn-cream:hover {
-    transform: translateY(-2px);
-  }
-
-  /* Cards - solid backgrounds */
   .card {
-    @apply bg-navy border border-sky/20 rounded-lg p-6 transition-all duration-200;
+    @apply rounded-xl border bg-card text-card-foreground shadow;
   }
 
-  .card:hover {
-    @apply border-coral/40;
-  }
-
-  /* Form elements */
-  .form-label {
-    @apply block text-sm font-medium text-sky mb-1.5;
-  }
-
-  .form-input {
-    @apply w-full bg-navy-dark border border-sky/30 rounded px-4 py-2.5 text-white placeholder-sky/50 transition-all duration-200;
-  }
-
-  .form-input:focus {
-    @apply outline-none border-coral ring-2 ring-coral/20;
-  }
-
-  .form-textarea {
-    @apply form-input min-h-[100px] resize-y;
-  }
-
-  /* Skeleton loading */
-  .skeleton {
-    @apply animate-pulse rounded bg-navy;
-  }
-
-  /* Loading spinner */
-  .spinner {
-    @apply w-5 h-5 border-2 rounded-full animate-spin;
-    border-color: rgba(168, 208, 230, 0.3);
-    border-top-color: #F76C6C;
-  }
-
-  /* Score badges - solid colors */
-  .score-badge {
-    @apply inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-semibold;
-  }
-
-  .score-excellent {
-    @apply bg-emerald-500/20 text-emerald-400;
-  }
-
-  .score-good {
-    @apply bg-sky/20 text-sky;
-  }
-
-  .score-average {
-    @apply bg-cream/20 text-cream;
-  }
-
-  .score-poor {
-    @apply bg-coral/20 text-coral;
-  }
-
-  /* Status badges - solid colors */
-  .status-badge {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium;
-  }
-
-  .status-completed {
-    @apply bg-emerald-500/20 text-emerald-400;
-  }
-
-  .status-processing {
-    @apply bg-cream/20 text-cream;
-  }
-
-  .status-failed {
-    @apply bg-coral/20 text-coral;
-  }
-
-  /* Progress bar - solid color */
-  .progress-bar {
-    @apply h-2 bg-navy-dark rounded-full overflow-hidden;
-  }
-
-  .progress-fill {
-    @apply h-full bg-coral rounded-full transition-all duration-300;
-  }
-
-  /* Line clamp */
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  .text-gradient-accent {
+    @apply text-primary font-bold;
   }
 }

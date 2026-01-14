@@ -1,105 +1,91 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+    darkMode: ["class"],
     content: [
-        "./index.html",
-        "./src/**/*.{js,ts,jsx,tsx}",
+        './pages/**/*.{js,jsx}',
+        './components/**/*.{js,jsx}',
+        './app/**/*.{js,jsx}',
+        './src/**/*.{js,jsx}',
     ],
+    prefix: "",
     theme: {
+        container: {
+            center: true,
+            padding: "2rem",
+            screens: {
+                "2xl": "1400px",
+            },
+        },
         extend: {
             colors: {
-                // Primary palette from reference image
-                cream: '#F8E9A1',
-                coral: '#F76C6C',
-                'coral-dark': '#e55555',
-                sky: '#A8D0E6',
-                'sky-dark': '#8bbdd9',
-                navy: '#374785',
-                'navy-dark': '#24305E',
-
-                // Dark theme backgrounds using navy palette
-                dark: {
-                    primary: '#1a1f3c',
-                    secondary: '#24305E',
-                    tertiary: '#374785',
-                    card: 'rgba(36, 48, 94, 0.8)',
-                    hover: 'rgba(168, 208, 230, 0.1)',
+                border: "oklch(var(--border))", // Has internal opacity
+                input: "oklch(var(--input))",   // Has internal opacity
+                ring: "oklch(var(--ring) / <alpha-value>)",
+                background: "oklch(var(--background) / <alpha-value>)",
+                foreground: "oklch(var(--foreground) / <alpha-value>)",
+                primary: {
+                    DEFAULT: "oklch(var(--primary) / <alpha-value>)",
+                    foreground: "oklch(var(--primary-foreground) / <alpha-value>)",
                 },
-
-                // Accent colors
+                secondary: {
+                    DEFAULT: "oklch(var(--secondary) / <alpha-value>)",
+                    foreground: "oklch(var(--secondary-foreground) / <alpha-value>)",
+                },
+                destructive: {
+                    DEFAULT: "oklch(var(--destructive) / <alpha-value>)",
+                    foreground: "oklch(var(--destructive-foreground) / <alpha-value>)",
+                },
+                muted: {
+                    DEFAULT: "oklch(var(--muted) / <alpha-value>)",
+                    foreground: "oklch(var(--muted-foreground) / <alpha-value>)",
+                },
                 accent: {
-                    primary: '#F76C6C',
-                    'primary-hover': '#e55555',
-                    secondary: '#A8D0E6',
-                    tertiary: '#F8E9A1',
+                    DEFAULT: "oklch(var(--accent) / <alpha-value>)",
+                    foreground: "oklch(var(--accent-foreground) / <alpha-value>)",
                 },
-
-                // Text colors
-                text: {
-                    primary: '#ffffff',
-                    secondary: '#A8D0E6',
-                    muted: 'rgba(168, 208, 230, 0.7)',
+                popover: {
+                    DEFAULT: "oklch(var(--popover) / <alpha-value>)",
+                    foreground: "oklch(var(--popover-foreground) / <alpha-value>)",
                 },
+                card: {
+                    DEFAULT: "oklch(var(--card) / <alpha-value>)",
+                    foreground: "oklch(var(--card-foreground) / <alpha-value>)",
+                },
+                // Legacy mappings to prevent immediate breakage
+                navy: {
+                    DEFAULT: "oklch(var(--background) / <alpha-value>)",
+                    dark: "oklch(var(--card) / <alpha-value>)",
+                },
+                coral: {
+                    DEFAULT: "oklch(var(--primary) / <alpha-value>)",
+                    dark: "oklch(var(--primary) / <alpha-value>)",
+                },
+                sky: {
+                    DEFAULT: "oklch(var(--muted-foreground) / <alpha-value>)",
+                    dark: "oklch(var(--muted-foreground) / <alpha-value>)",
+                },
+                cream: "oklch(var(--accent) / <alpha-value>)",
             },
-            fontFamily: {
-                sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-            },
-            spacing: {
-                '18': '4.5rem',
-                '88': '22rem',
-            },
-            boxShadow: {
-                'glow': '0 0 20px rgba(247, 108, 108, 0.3)',
-                'glow-lg': '0 0 40px rgba(247, 108, 108, 0.4)',
-                'card': '0 4px 20px rgba(0, 0, 0, 0.3)',
-                'float': '0 20px 40px rgba(0, 0, 0, 0.3)',
-            },
-            backgroundImage: {
-                'accent-gradient': 'linear-gradient(135deg, #F76C6C 0%, #F8E9A1 100%)',
-                'navy-gradient': 'linear-gradient(135deg, #24305E 0%, #374785 100%)',
-                'sky-gradient': 'linear-gradient(135deg, #A8D0E6 0%, #F8E9A1 100%)',
-            },
-            animation: {
-                'float': 'float 6s ease-in-out infinite',
-                'float-delayed': 'float 6s ease-in-out 2s infinite',
-                'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
-                'gradient-shift': 'gradient-shift 8s ease infinite',
-                'fade-in-up': 'fade-in-up 0.6s ease-out',
-                'fade-in': 'fade-in 0.4s ease-out',
-                'slide-in-right': 'slide-in-right 0.4s ease-out',
+            borderRadius: {
+                lg: "var(--radius)",
+                md: "calc(var(--radius) - 2px)",
+                sm: "calc(var(--radius) - 4px)",
             },
             keyframes: {
-                'float': {
-                    '0%, 100%': { transform: 'translateY(0)' },
-                    '50%': { transform: 'translateY(-20px)' },
+                "accordion-down": {
+                    from: { height: "0" },
+                    to: { height: "var(--radix-accordion-content-height)" },
                 },
-                'pulse-glow': {
-                    '0%, 100%': { boxShadow: '0 0 20px rgba(247, 108, 108, 0.3)' },
-                    '50%': { boxShadow: '0 0 40px rgba(247, 108, 108, 0.5)' },
-                },
-                'gradient-shift': {
-                    '0%, 100%': { backgroundPosition: '0% 50%' },
-                    '50%': { backgroundPosition: '100% 50%' },
-                },
-                'fade-in-up': {
-                    '0%': { opacity: '0', transform: 'translateY(20px)' },
-                    '100%': { opacity: '1', transform: 'translateY(0)' },
-                },
-                'fade-in': {
-                    '0%': { opacity: '0' },
-                    '100%': { opacity: '1' },
-                },
-                'slide-in-right': {
-                    '0%': { opacity: '0', transform: 'translateX(20px)' },
-                    '100%': { opacity: '1', transform: 'translateX(0)' },
+                "accordion-up": {
+                    from: { height: "var(--radix-accordion-content-height)" },
+                    to: { height: "0" },
                 },
             },
-            transitionProperty: {
-                'height': 'height',
-                'spacing': 'margin, padding',
+            animation: {
+                "accordion-down": "accordion-down 0.2s ease-out",
+                "accordion-up": "accordion-up 0.2s ease-out",
             },
         },
     },
-    plugins: [
-        require('@tailwindcss/forms'),
-    ],
+    plugins: [require("tailwindcss-animate"), require('@tailwindcss/forms')],
 }

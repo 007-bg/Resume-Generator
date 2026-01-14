@@ -1,0 +1,22 @@
+# Django Backend - Core
+Django>=4.2
+djangorestframework>=3.14
+django-cors-headers
+django-environ
+psycopg2-binary
+whitenoise
+gunicorn
+
+# Authentication
+djangorestframework-simplejwt
+django-allauth
+dj-rest-auth[with_social]
+PyJWT
+
+# Async Task Processing
+celery
+redis
+
+# PDF Processing
+pdfplumber
+PyPDF2

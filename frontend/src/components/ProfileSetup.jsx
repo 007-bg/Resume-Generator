@@ -15,6 +15,7 @@ import {
 function ProfileSetup() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    // eslint-disable-next-line no-unused-vars
     const user = useSelector(selectUser);
     const groundTruth = useSelector(selectGroundTruth);
     const saving = useSelector(selectProfileSaving);
@@ -35,12 +36,12 @@ function ProfileSetup() {
         dispatch(fetchProfile());
     }, [dispatch]);
 
-    // ✅ Better: Reset localData when groundTruth changes (during render, not Effect)
-    const [prevGroundTruth, setPrevGroundTruth] = useState(null);
-    if (groundTruth !== prevGroundTruth && groundTruth && Object.keys(groundTruth).length > 0) {
-        setPrevGroundTruth(groundTruth);
-        setLocalData(prev => ({ ...prev, ...groundTruth }));
-    }
+    // Reset localData when groundTruth changes
+    useEffect(() => {
+        if (groundTruth && Object.keys(groundTruth).length > 0) {
+            setLocalData(prev => ({ ...prev, ...groundTruth }));
+        }
+    }, [groundTruth]);
 
     const updateField = (section, field, value) => {
         setLocalData(prev => ({
@@ -94,367 +95,294 @@ function ProfileSetup() {
     };
 
     const steps = [
-        { icon: FiUser, label: 'Personal Info' },
-        { icon: FiBriefcase, label: 'Experience' },
-        { icon: FiBook, label: 'Education' },
-        { icon: FiCode, label: 'Skills' },
-        { icon: FiAward, label: 'Certifications' }
+        { icon: "mdi:account", label: 'Personal Info' },
+        { icon: "mdi:briefcase", label: 'Experience' },
+        { icon: "mdi:school", label: 'Education' },
+        { icon: "mdi:code-tags", label: 'Skills' },
+        { icon: "mdi:certificate", label: 'Review' }
     ];
 
-    if (loading) {
+    if (loading && !localData.personal_info.full_name) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 text-sky/50">
-                <div className="spinner w-10 h-10" />
-                <p>Loading profile...</p>
+            <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+                <div className="spinner w-8 h-8 border-primary" />
+                <p className="text-muted-foreground">Loading profile...</p>
             </div>
         );
     }
 
     return (
-        <div className="max-w-3xl mx-auto">
-            <h1 className="text-2xl font-bold mb-2">Complete Your Profile</h1>
-            <p className="text-sky/70 mb-6">
-                This information will be used to generate your personalized resumes.
-            </p>
+        <div className="container mx-auto py-8 px-4 max-w-4xl">
+            <div className="text-center mb-10">
+                <h1 className="text-3xl font-bold tracking-tight mb-2">Build Your Master Profile</h1>
+                <p className="text-muted-foreground text-lg">
+                    This "Ground Truth" data will be used to generate tailored resumes.
+                </p>
+            </div>
 
-            {/* Progress Steps */}
-            <div className="flex items-center justify-center gap-2 mb-8">
+            {/* Stepper */}
+            <div className="flex justify-between mb-10 relative px-4">
+                <div className="absolute top-1/2 left-0 w-full h-0.5 bg-secondary -z-10 -translate-y-1/2" />
                 {steps.map((s, i) => (
-                    <div key={i} className="flex items-center">
-                        <button
-                            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${step === i + 1
-                                ? 'bg-coral text-white'
-                                : 'bg-navy text-sky border border-sky/20 hover:border-coral'
-                                }`}
-                            onClick={() => setStep(i + 1)}
-                        >
-                            <s.icon size={18} />
-                        </button>
-                        {i < steps.length - 1 && (
-                            <div className="w-10 h-0.5 bg-sky/20" />
-                        )}
+                    <div
+                        key={i}
+                        className={`flex flex-col items-center gap-2 cursor-pointer transition-colors ${i + 1 === step ? 'text-primary' : i + 1 < step ? 'text-green-500' : 'text-muted-foreground'}`}
+                        onClick={() => setStep(i + 1)}
+                    >
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 bg-background transition-all ${i + 1 === step ? 'border-primary shadow-glow' :
+                                i + 1 < step ? 'border-green-500 bg-green-500/10' :
+                                    'border-secondary bg-secondary'
+                            }`}>
+                            <Icon icon={i + 1 < step ? "mdi:check" : s.icon} width="20" />
+                        </div>
+                        <span className="text-xs font-medium hidden sm:block">{s.label}</span>
                     </div>
                 ))}
             </div>
 
-            <div className="card">
-                {/* Step 1: Personal Info */}
+            {/* Content Card */}
+            <div className="card p-6 md:p-8 animate-fade-in-up">
                 {step === 1 && (
-                    <div>
-                        <h2 className="text-xl font-semibold mb-6">Personal Information</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-6">
+                        <h2 className="text-xl font-bold flex items-center gap-2">
+                            <Icon icon="mdi:account" className="text-primary" width="24" />
+                            Personal Information
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="form-label">Full Name *</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    value={localData.personal_info.full_name || ''}
+                                <label className="block text-sm font-medium mb-1.5">Full Name</label>
+                                <input className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    value={localData.personal_info?.full_name || ''}
                                     onChange={e => updateField('personal_info', 'full_name', e.target.value)}
                                     placeholder="John Doe"
                                 />
                             </div>
                             <div>
-                                <label className="form-label">Email *</label>
-                                <input
-                                    type="email"
-                                    className="form-input"
-                                    value={localData.personal_info.email || user?.email || ''}
+                                <label className="block text-sm font-medium mb-1.5">Email</label>
+                                <input className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    value={localData.personal_info?.email || ''}
                                     onChange={e => updateField('personal_info', 'email', e.target.value)}
+                                    placeholder="john@example.com"
                                 />
                             </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <div>
-                                <label className="form-label">Phone</label>
-                                <input
-                                    type="tel"
-                                    className="form-input"
-                                    value={localData.personal_info.phone || ''}
+                                <label className="block text-sm font-medium mb-1.5">Phone</label>
+                                <input className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    value={localData.personal_info?.phone || ''}
                                     onChange={e => updateField('personal_info', 'phone', e.target.value)}
-                                    placeholder="+1-555-0123"
+                                    placeholder="+1 (555) 000-0000"
                                 />
                             </div>
                             <div>
-                                <label className="form-label">Location</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    value={localData.personal_info.location || ''}
+                                <label className="block text-sm font-medium mb-1.5">Location</label>
+                                <input className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    value={localData.personal_info?.location || ''}
                                     onChange={e => updateField('personal_info', 'location', e.target.value)}
-                                    placeholder="San Francisco, CA"
+                                    placeholder="City, State"
                                 />
                             </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                            <div>
-                                <label className="form-label">LinkedIn URL</label>
-                                <input
-                                    type="url"
-                                    className="form-input"
-                                    value={localData.personal_info.linkedin || ''}
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium mb-1.5">LinkedIn / Portfolio URL</label>
+                                <input className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    value={localData.personal_info?.linkedin || ''}
                                     onChange={e => updateField('personal_info', 'linkedin', e.target.value)}
-                                    placeholder="linkedin.com/in/johndoe"
+                                    placeholder="https://linkedin.com/in/..."
                                 />
                             </div>
-                            <div>
-                                <label className="form-label">GitHub URL</label>
-                                <input
-                                    type="url"
-                                    className="form-input"
-                                    value={localData.personal_info.github || ''}
-                                    onChange={e => updateField('personal_info', 'github', e.target.value)}
-                                    placeholder="github.com/johndoe"
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium mb-1.5">Professional Summary</label>
+                                <textarea className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    value={localData.summary || ''}
+                                    onChange={e => updateField('summary', null, e.target.value)}
+                                    placeholder="Brief overview of your professional background..."
                                 />
                             </div>
-                        </div>
-                        <div className="mt-4">
-                            <label className="form-label">Professional Summary</label>
-                            <textarea
-                                className="form-textarea"
-                                value={localData.summary || ''}
-                                onChange={e => updateField('summary', null, e.target.value)}
-                                placeholder="Brief overview of your professional background..."
-                                rows={4}
-                            />
                         </div>
                     </div>
                 )}
 
-                {/* Step 2: Experience */}
                 {step === 2 && (
-                    <div>
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-semibold">Work Experience</h2>
-                            <button className="btn btn-secondary" onClick={() => addItem('experience')}>
-                                <FiPlus size={16} /> Add Experience
+                    <div className="space-y-6">
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-xl font-bold flex items-center gap-2">
+                                <Icon icon="mdi:briefcase" className="text-primary" width="24" />
+                                Work Experience
+                            </h2>
+                            <button className="btn btn-secondary text-xs gap-1" onClick={() => addItem('experience')}>
+                                <Icon icon="mdi:plus" width="16" /> Add Experience
                             </button>
                         </div>
 
-                        {(localData.experience || []).map((exp, i) => (
-                            <div key={i} className="bg-navy border border-sky/20 rounded-lg p-4 mb-4">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h4 className="font-medium">Experience {i + 1}</h4>
-                                    <button className="btn btn-ghost p-2" onClick={() => removeItem('experience', i)}>
-                                        <FiTrash2 size={16} />
-                                    </button>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="form-label">Job Title</label>
-                                        <input
-                                            type="text"
-                                            className="form-input"
-                                            value={exp.title || ''}
-                                            onChange={e => updateItem('experience', i, 'title', e.target.value)}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="form-label">Company</label>
-                                        <input
-                                            type="text"
-                                            className="form-input"
-                                            value={exp.company || ''}
-                                            onChange={e => updateItem('experience', i, 'company', e.target.value)}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                    <div>
-                                        <label className="form-label">Start Date</label>
-                                        <input
-                                            type="month"
-                                            className="form-input"
-                                            value={exp.start_date || ''}
-                                            onChange={e => updateItem('experience', i, 'start_date', e.target.value)}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="form-label">End Date (leave empty if current)</label>
-                                        <input
-                                            type="month"
-                                            className="form-input"
-                                            value={exp.end_date || ''}
-                                            onChange={e => updateItem('experience', i, 'end_date', e.target.value)}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="mt-4">
-                                    <label className="form-label">Description & Achievements</label>
-                                    <textarea
-                                        className="form-textarea"
-                                        value={exp.description || ''}
-                                        onChange={e => updateItem('experience', i, 'description', e.target.value)}
-                                        placeholder="Key responsibilities and achievements..."
-                                        rows={3}
+                        {localData.experience?.map((exp, idx) => (
+                            <div key={idx} className="p-4 rounded-lg border border-border bg-secondary/20 relative group">
+                                <button className="absolute top-4 right-4 text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100" onClick={() => removeItem('experience', idx)}>
+                                    <Icon icon="mdi:delete" width="18" />
+                                </button>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <input className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        placeholder="Job Title"
+                                        value={exp.title}
+                                        onChange={e => updateItem('experience', idx, 'title', e.target.value)}
+                                    />
+                                    <input className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        placeholder="Company"
+                                        value={exp.company}
+                                        onChange={e => updateItem('experience', idx, 'company', e.target.value)}
                                     />
                                 </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <input className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        placeholder="Start Date"
+                                        value={exp.start_date}
+                                        onChange={e => updateItem('experience', idx, 'start_date', e.target.value)}
+                                    />
+                                    <input className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        placeholder="End Date"
+                                        value={exp.end_date}
+                                        onChange={e => updateItem('experience', idx, 'end_date', e.target.value)}
+                                    />
+                                </div>
+                                <textarea className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    placeholder="Key responsibilities and achievements..."
+                                    value={exp.description}
+                                    onChange={e => updateItem('experience', idx, 'description', e.target.value)}
+                                />
                             </div>
                         ))}
-
-                        {(localData.experience || []).length === 0 && (
-                            <div className="text-center py-8 text-sky/50">
-                                <p>No experience added yet</p>
+                        {localData.experience?.length === 0 && (
+                            <div className="text-center py-8 text-muted-foreground bg-secondary/10 rounded-lg border border-dashed border-border">
+                                No experience added yet.
                             </div>
                         )}
                     </div>
                 )}
 
-                {/* Step 3: Education */}
                 {step === 3 && (
-                    <div>
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-semibold">Education</h2>
-                            <button className="btn btn-secondary" onClick={() => addItem('education')}>
-                                <FiPlus size={16} /> Add Education
+                    <div className="space-y-6">
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-xl font-bold flex items-center gap-2">
+                                <Icon icon="mdi:school" className="text-primary" width="24" />
+                                Education
+                            </h2>
+                            <button className="btn btn-secondary text-xs gap-1" onClick={() => addItem('education')}>
+                                <Icon icon="mdi:plus" width="16" /> Add Education
                             </button>
                         </div>
 
-                        {(localData.education || []).map((edu, i) => (
-                            <div key={i} className="bg-navy border border-sky/20 rounded-lg p-4 mb-4">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h4 className="font-medium">Education {i + 1}</h4>
-                                    <button className="btn btn-ghost p-2" onClick={() => removeItem('education', i)}>
-                                        <FiTrash2 size={16} />
-                                    </button>
+                        {localData.education?.map((edu, idx) => (
+                            <div key={idx} className="p-4 rounded-lg border border-border bg-secondary/20 relative group">
+                                <button className="absolute top-4 right-4 text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100" onClick={() => removeItem('education', idx)}>
+                                    <Icon icon="mdi:delete" width="18" />
+                                </button>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <input className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        placeholder="Degree"
+                                        value={edu.degree}
+                                        onChange={e => updateItem('education', idx, 'degree', e.target.value)}
+                                    />
+                                    <input className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        placeholder="Institution/School"
+                                        value={edu.institution}
+                                        onChange={e => updateItem('education', idx, 'institution', e.target.value)}
+                                    />
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="form-label">Degree</label>
-                                        <input
-                                            type="text"
-                                            className="form-input"
-                                            value={edu.degree || ''}
-                                            onChange={e => updateItem('education', i, 'degree', e.target.value)}
-                                            placeholder="B.S. Computer Science"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="form-label">Institution</label>
-                                        <input
-                                            type="text"
-                                            className="form-input"
-                                            value={edu.institution || ''}
-                                            onChange={e => updateItem('education', i, 'institution', e.target.value)}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                    <div>
-                                        <label className="form-label">Graduation Date</label>
-                                        <input
-                                            type="month"
-                                            className="form-input"
-                                            value={edu.graduation_date || ''}
-                                            onChange={e => updateItem('education', i, 'graduation_date', e.target.value)}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="form-label">GPA (optional)</label>
-                                        <input
-                                            type="text"
-                                            className="form-input"
-                                            value={edu.gpa || ''}
-                                            onChange={e => updateItem('education', i, 'gpa', e.target.value)}
-                                            placeholder="3.8"
-                                        />
-                                    </div>
+                                    <input className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        placeholder="Graduation Year"
+                                        value={edu.graduation_date}
+                                        onChange={e => updateItem('education', idx, 'graduation_date', e.target.value)}
+                                    />
+                                    <input className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        placeholder="GPA (Optional)"
+                                        value={edu.gpa}
+                                        onChange={e => updateItem('education', idx, 'gpa', e.target.value)}
+                                    />
                                 </div>
                             </div>
                         ))}
                     </div>
                 )}
 
-                {/* Step 4: Skills */}
                 {step === 4 && (
-                    <div>
-                        <h2 className="text-xl font-semibold mb-6">Skills</h2>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="form-label">Technical Skills</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    value={(localData.skills?.technical || []).join(', ')}
-                                    onChange={e => updateField('skills', 'technical', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-                                    placeholder="Python, JavaScript, React, AWS (comma-separated)"
-                                />
-                            </div>
-                            <div>
-                                <label className="form-label">Soft Skills</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    value={(localData.skills?.soft || []).join(', ')}
-                                    onChange={e => updateField('skills', 'soft', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-                                    placeholder="Leadership, Communication, Problem Solving"
-                                />
-                            </div>
-                            <div>
-                                <label className="form-label">Languages</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    value={(localData.skills?.languages || []).join(', ')}
-                                    onChange={e => updateField('skills', 'languages', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-                                    placeholder="English (Native), Spanish (Intermediate)"
-                                />
-                            </div>
+                    <div className="space-y-6">
+                        <h2 className="text-xl font-bold flex items-center gap-2">
+                            <Icon icon="mdi:code-tags" className="text-primary" width="24" />
+                            Skills
+                        </h2>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-1.5 text-muted-foreground">Technical Skills (Comma separated)</label>
+                            <textarea className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                placeholder="React, Python, AWS, Docker..."
+                                value={Array.isArray(localData.skills?.technical) ? localData.skills.technical.join(', ') : localData.skills?.technical || ''}
+                                onChange={e => {
+                                    const val = e.target.value;
+                                    setLocalData(prev => ({
+                                        ...prev,
+                                        skills: { ...prev.skills, technical: val.split(',').map(s => s.trim()) }
+                                    }));
+                                }}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-1.5 text-muted-foreground">Soft Skills (Comma separated)</label>
+                            <textarea className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                placeholder="Leadership, Communication, Problem Solving..."
+                                value={Array.isArray(localData.skills?.soft) ? localData.skills.soft.join(', ') : localData.skills?.soft || ''}
+                                onChange={e => {
+                                    const val = e.target.value;
+                                    setLocalData(prev => ({
+                                        ...prev,
+                                        skills: { ...prev.skills, soft: val.split(',').map(s => s.trim()) }
+                                    }));
+                                }}
+                            />
                         </div>
                     </div>
                 )}
 
-                {/* Step 5: Certifications */}
                 {step === 5 && (
-                    <div>
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-semibold">Certifications (Optional)</h2>
-                            <button className="btn btn-secondary" onClick={() => addItem('certifications')}>
-                                <FiPlus size={16} /> Add Certification
-                            </button>
+                    <div className="space-y-6">
+                        <h2 className="text-xl font-bold flex items-center gap-2">
+                            <Icon icon="mdi:checkbox-marked-circle-outline" className="text-primary" width="24" />
+                            Review
+                        </h2>
+
+                        <div className="bg-secondary/20 p-6 rounded-lg border border-border">
+                            <h3 className="font-bold text-lg mb-4 text-foreground">Summary</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 text-sm">
+                                <div><span className="text-muted-foreground">Name:</span> {localData.personal_info?.full_name}</div>
+                                <div><span className="text-muted-foreground">Experience:</span> {localData.experience?.length} entries</div>
+                                <div><span className="text-muted-foreground">Education:</span> {localData.education?.length} entries</div>
+                                <div><span className="text-muted-foreground">Technical Skills:</span> {localData.skills?.technical?.length || 0}</div>
+                            </div>
                         </div>
 
-                        {(localData.certifications || []).map((cert, i) => (
-                            <div key={i} className="bg-navy border border-sky/20 rounded-lg p-4 mb-4">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h4 className="font-medium">Certification {i + 1}</h4>
-                                    <button className="btn btn-ghost p-2" onClick={() => removeItem('certifications', i)}>
-                                        <FiTrash2 size={16} />
-                                    </button>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="form-label">Certification Name</label>
-                                        <input
-                                            type="text"
-                                            className="form-input"
-                                            value={cert.name || ''}
-                                            onChange={e => updateItem('certifications', i, 'name', e.target.value)}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="form-label">Issuer</label>
-                                        <input
-                                            type="text"
-                                            className="form-input"
-                                            value={cert.issuer || ''}
-                                            onChange={e => updateItem('certifications', i, 'issuer', e.target.value)}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                        <p className="text-sm text-muted-foreground">
+                            Click Save to update your "Ground Truth" profile. This will serve as the foundation for all AI-generated resumes.
+                        </p>
                     </div>
                 )}
+            </div>
 
-                {/* Navigation */}
-                <div className="flex items-center justify-between mt-8">
-                    <button className="btn btn-secondary" onClick={() => setStep(step - 1)} disabled={step === 1}>
-                        Back
-                    </button>
-                    <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
-                        {saving ? <span className="spinner" /> : step < 5 ? <>Save & Continue <FiArrowRight size={18} /></> : <>Complete Setup <FiSave size={18} /></>}
-                    </button>
-                </div>
+            {/* Actions */}
+            <div className="flex justify-between mt-8">
+                <button
+                    className="btn btn-secondary px-6"
+                    onClick={() => setStep(Math.max(1, step - 1))}
+                    disabled={step === 1}
+                >
+                    Back
+                </button>
+                <button
+                    className="btn btn-primary px-8 gap-2"
+                    onClick={handleSave}
+                    disabled={saving}
+                >
+                    {saving ? <div className="spinner w-4 h-4 border-white" /> : <Icon icon="mdi:content-save" width="18" />}
+                    {step === 5 ? 'Save Profile' : 'Next Step'}
+                </button>
             </div>
         </div>
     );

@@ -17,7 +17,9 @@ function JobDashboard() {
         try {
             setIsLoading(true);
             const data = await getJobs();
-            setJobs(data.results || data);
+            // Handle pagination (DRF returns { count, results: [...] }) or direct array
+            const jobList = Array.isArray(data) ? data : (data.results || []);
+            setJobs(jobList);
         } catch (err) {
             setError('Failed to load jobs');
             console.error(err);
@@ -26,133 +28,105 @@ function JobDashboard() {
         }
     };
 
-    const handleCreateJob = async (formData) => {
+    const handleCreateJob = async (jobData) => {
         try {
-            await createJob(formData);
+            await createJob(jobData);
             setShowCreateModal(false);
             loadJobs();
         } catch (err) {
-            console.error('Failed to create job:', err);
+            console.error(err);
+            alert('Failed to create job');
         }
     };
 
-    const handleDeleteJob = async (jobId) => {
-        if (!confirm('Are you sure you want to delete this job posting?')) return;
+    const handleDeleteJob = async (jobId, e) => {
+        e.preventDefault(); // Prevent navigation
+        if (!confirm('Are you sure you want to delete this job?')) return;
 
         try {
             await deleteJob(jobId);
             loadJobs();
         } catch (err) {
-            console.error('Failed to delete job:', err);
+            console.error(err);
+            alert('Failed to delete job');
         }
     };
 
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-        });
-    };
-
-    if (isLoading) {
-        return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[1, 2, 3].map((i) => (
-                    <div key={i} className="card">
-                        <div className="skeleton h-6 w-[70%] mb-3" />
-                        <div className="skeleton h-4 w-1/2 mb-6" />
-                        <div className="skeleton h-16 w-full" />
-                    </div>
-                ))}
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="card text-center py-12">
-                <p className="text-coral">{error}</p>
-                <button className="btn btn-primary mt-4" onClick={loadJobs}>
-                    Retry
-                </button>
-            </div>
-        );
-    }
-
     return (
-        <div>
-            <div className="flex items-center justify-between mb-6">
+        <div className="container mx-auto py-8 px-4 max-w-7xl">
+            <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold">Job Dashboard</h1>
-                    <p className="text-sky/70 mt-2">
-                        Manage job postings and analyze candidate resumes
-                    </p>
+                    <h1 className="text-3xl font-bold tracking-tight">Job Analysis</h1>
+                    <p className="text-muted-foreground mt-2">Manage job postings and candidate analysis</p>
                 </div>
                 <button
-                    className="btn btn-primary"
+                    className="btn btn-primary gap-2"
                     onClick={() => setShowCreateModal(true)}
                 >
-                    <FiPlus size={18} />
-                    New Job Posting
+                    <Icon icon="mdi:plus" width="18" />
+                    New Job
                 </button>
             </div>
 
-            {jobs.length === 0 ? (
-                <div className="card text-center py-12">
-                    <FiBriefcase size={64} className="mx-auto mb-4 text-sky/50" />
-                    <h3 className="text-lg font-semibold text-sky/70 mb-2">No job postings yet</h3>
-                    <p className="text-sky/50 mb-4">
-                        Create your first job posting to start analyzing resumes
-                    </p>
-                    <button
-                        className="btn btn-primary"
-                        onClick={() => setShowCreateModal(true)}
-                    >
-                        <FiPlus size={18} />
-                        Create Job Posting
+            {error && (
+                <div className="p-4 mb-6 text-sm text-destructive bg-destructive/10 rounded-lg border border-destructive/20">
+                    {error}
+                </div>
+            )}
+
+            {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="h-48 rounded-xl bg-card border border-border animate-pulse" />
+                    ))}
+                </div>
+            ) : jobs.length === 0 ? (
+                <div className="text-center py-20 bg-card rounded-xl border border-border">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-secondary mb-4">
+                        <Icon icon="mdi:briefcase-outline" className="text-muted-foreground w-8 h-8" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">No jobs yet</h3>
+                    <p className="text-muted-foreground mb-6">Create a job posting to start analyzing candidates</p>
+                    <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
+                        Create Job
                     </button>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {jobs.map((job) => (
+                    {jobs.map(job => (
                         <Link
-                            key={job.id}
                             to={`/jobs/${job.id}`}
-                            className="no-underline"
+                            key={job.id}
+                            className="card group hover:shadow-lg transition-all duration-200 p-6 flex flex-col h-full bg-card hover:border-primary/50"
                         >
-                            <div className="card h-full hover:-translate-y-1 transition-transform">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="font-semibold">{job.title}</h3>
-                                    <button
-                                        className="btn btn-ghost p-2"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleDeleteJob(job.id);
-                                        }}
-                                    >
-                                        <FiTrash2 size={16} />
-                                    </button>
+                            <div className="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 className="font-semibold text-lg line-clamp-1 group-hover:text-primary transition-colors">
+                                        {job.title}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground">{job.company}</p>
                                 </div>
+                                <button
+                                    onClick={(e) => handleDeleteJob(job.id, e)}
+                                    className="text-muted-foreground hover:text-destructive p-1 rounded-md hover:bg-destructive/10 transition-colors"
+                                >
+                                    <Icon icon="mdi:delete" width="18" />
+                                </button>
+                            </div>
 
-                                {job.company && (
-                                    <p className="text-sky/70 text-sm">{job.company}</p>
-                                )}
+                            <p className="text-sm text-muted-foreground line-clamp-3 mb-6 flex-1">
+                                {job.description}
+                            </p>
 
-                                <p className="text-sky/60 mt-4 text-sm line-clamp-3">
-                                    {job.description}
-                                </p>
-
-                                <div className="flex items-center gap-4 mt-6 text-sky/50 text-sm">
-                                    <span className="flex items-center gap-1">
-                                        <FiUsers size={14} />
-                                        {job.candidate_count || 0} candidates
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                        <FiCalendar size={14} />
-                                        {formatDate(job.created_at)}
-                                    </span>
-                                </div>
+                            <div className="flex items-center justify-between text-xs text-muted-foreground pt-4 border-t border-border mt-auto">
+                                <span className="flex items-center gap-1.5">
+                                    <Icon icon="mdi:calendar" width="14" />
+                                    {new Date(job.created_at).toLocaleDateString()}
+                                </span>
+                                <span className="flex items-center gap-1.5 px-2 py-1 bg-secondary rounded-full text-secondary-foreground font-medium">
+                                    <Icon icon="mdi:account-group" width="14" />
+                                    {job.candidates_count || 0} Candidates
+                                </span>
                             </div>
                         </Link>
                     ))}
@@ -162,102 +136,78 @@ function JobDashboard() {
             {showCreateModal && (
                 <CreateJobModal
                     onClose={() => setShowCreateModal(false)}
-                    onCreate={handleCreateJob}
+                    onSubmit={handleCreateJob}
                 />
             )}
         </div>
     );
 }
 
-// Create Job Modal Component
-function CreateJobModal({ onClose, onCreate }) {
+function CreateJobModal({ onClose, onSubmit }) {
     const [formData, setFormData] = useState({
         title: '',
         company: '',
         description: '',
-        requirements: '',
+        requirements: ''
     });
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        setIsSubmitting(true);
-        try {
-            await onCreate(formData);
-        } finally {
-            setIsSubmitting(false);
-        }
+        onSubmit(formData);
     };
 
     return (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-6" onClick={onClose}>
-            <div className="bg-navy-dark border border-sky/20 rounded-lg max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-lg" onClick={(e) => e.stopPropagation()}>
-                <div className="flex items-center justify-between p-6 border-b border-sky/10">
-                    <h2 className="text-xl font-bold">Create Job Posting</h2>
-                    <button className="btn btn-ghost p-2" onClick={onClose}>
-                        ×
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+            <div className="bg-card w-full max-w-lg rounded-xl shadow-lg border border-border p-6 animate-fade-in-up">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold">Create New Job</h2>
+                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
+                        <Icon icon="mdi:close" width="20" />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="p-6 space-y-4">
-                        <div>
-                            <label className="form-label">Job Title *</label>
-                            <input
-                                type="text"
-                                className="form-input"
-                                value={formData.title}
-                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                placeholder="e.g., Senior Software Engineer"
-                                required
-                            />
-                        </div>
-
-                        <div>
-                            <label className="form-label">Company</label>
-                            <input
-                                type="text"
-                                className="form-input"
-                                value={formData.company}
-                                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                                placeholder="e.g., Acme Corporation"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="form-label">Job Description *</label>
-                            <textarea
-                                className="form-textarea"
-                                value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                placeholder="Describe the role, responsibilities, and ideal candidate..."
-                                required
-                                rows={5}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="form-label">Requirements</label>
-                            <textarea
-                                className="form-textarea"
-                                value={formData.requirements}
-                                onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
-                                placeholder="List specific qualifications, skills, and experience required..."
-                                rows={4}
-                            />
-                        </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-1.5">Job Title</label>
+                        <input
+                            type="text"
+                            required
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            value={formData.title}
+                            onChange={e => setFormData({ ...formData, title: e.target.value })}
+                            placeholder="e.g. Senior Frontend Engineer"
+                        />
                     </div>
 
-                    <div className="flex justify-end gap-3 p-6 border-t border-sky/10">
-                        <button type="button" className="btn btn-secondary" onClick={onClose}>
+                    <div>
+                        <label className="block text-sm font-medium mb-1.5">Company</label>
+                        <input
+                            type="text"
+                            required
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            value={formData.company}
+                            onChange={e => setFormData({ ...formData, company: e.target.value })}
+                            placeholder="e.g. Acme Corp"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-1.5">Description</label>
+                        <textarea
+                            required
+                            className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            value={formData.description}
+                            onChange={e => setFormData({ ...formData, description: e.target.value })}
+                            placeholder="Paste full job description..."
+                        />
+                    </div>
+
+                    <div className="flex justify-end gap-3 mt-6">
+                        <button type="button" onClick={onClose} className="btn btn-secondary">
                             Cancel
                         </button>
-                        <button
-                            type="submit"
-                            className="btn btn-primary"
-                            disabled={isSubmitting || !formData.title || !formData.description}
-                        >
-                            {isSubmitting ? <span className="spinner" /> : 'Create Job'}
+                        <button type="submit" className="btn btn-primary">
+                            Create Job
                         </button>
                     </div>
                 </form>

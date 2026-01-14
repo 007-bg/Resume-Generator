@@ -9,12 +9,15 @@ import { generateResumePDF } from '../lib/pdfGenerator';
 
 function ResumeDashboard() {
     const dispatch = useDispatch();
+    // eslint-disable-next-line no-unused-vars
     const user = useSelector(selectUser);
     const resumes = useSelector(selectResumes);
     const isLoading = useSelector(selectResumesLoading);
     const generating = useSelector(selectGenerating);
+    // eslint-disable-next-line no-unused-vars
     const error = useSelector(selectResumesError);
     const isProfileComplete = useSelector(selectIsProfileComplete);
+    // eslint-disable-next-line no-unused-vars
     const completionPercentage = useSelector(selectCompletionPercentage);
 
     const [showGenerateModal, setShowGenerateModal] = useState(false);
@@ -62,10 +65,10 @@ function ResumeDashboard() {
 
     const getStatusIcon = (status) => {
         switch (status) {
-            case 'COMPLETED': return <FiCheckCircle size={16} className="text-emerald-500" />;
-            case 'PROCESSING': return <FiClock size={16} className="text-cream" />;
-            case 'FAILED': return <FiXCircle size={16} className="text-coral" />;
-            default: return <FiClock size={16} className="text-sky/50" />;
+            case 'COMPLETED': return <Icon icon="mdi:check-circle" width="16" className="text-emerald-500" />;
+            case 'PROCESSING': return <Icon icon="mdi:clock-outline" width="16" className="text-secondary-foreground" />;
+            case 'FAILED': return <Icon icon="mdi:close-circle" width="16" className="text-destructive" />;
+            default: return <Icon icon="mdi:clock-outline" width="16" className="text-muted-foreground" />;
         }
     };
 
@@ -78,18 +81,18 @@ function ResumeDashboard() {
     };
 
     return (
-        <div>
-            <div className="flex items-center justify-between mb-6">
+        <div className="container mx-auto py-8 px-4 max-w-7xl">
+            <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold">Resume Dashboard</h1>
-                    <p className="text-sky/70 mt-2">
+                    <h1 className="text-3xl font-bold tracking-tight">Resume Dashboard</h1>
+                    <p className="text-muted-foreground mt-2">
                         Generate AI-powered resumes tailored to your target jobs
                     </p>
                 </div>
 
                 {isProfileComplete ? (
-                    <button className="btn btn-primary" onClick={() => setShowGenerateModal(true)} disabled={!!generating}>
-                        {generating ? <span className="spinner" /> : <FiZap size={18} />}
+                    <button className="btn btn-primary gap-2" onClick={() => setShowGenerateModal(true)} disabled={!!generating}>
+                        {generating ? <div className="spinner w-4 h-4 border-current" /> : <Icon icon="mdi:flash" width="18" />}
                         {generating ? 'Generating...' : 'Generate Resume'}
                     </button>
                 ) : (
@@ -99,156 +102,144 @@ function ResumeDashboard() {
                 )}
             </div>
 
-            {!isProfileComplete && (
-                <div className="card mb-6 border-cream/50 bg-cream/10">
-                    <p className="text-cream">
-                        <strong>Profile Incomplete:</strong> Complete your profile to generate AI-powered resumes.
-                    </p>
-                    <Link to="/profile/setup" className="btn btn-primary mt-4">
-                        Complete Profile ({completionPercentage || 0}%)
-                    </Link>
-                </div>
-            )}
-
-            {error && (
-                <div className="card mb-4 border-coral/50 bg-coral/10">
-                    <p className="text-coral">{error}</p>
-                </div>
-            )}
-
-            {isLoading ? (
+            {/* Resume List */}
+            {isLoading && resumes.length === 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="card">
-                            <div className="skeleton h-6 w-3/5 mb-3" />
-                            <div className="skeleton h-4 w-2/5 mb-6" />
-                            <div className="skeleton h-20" />
+                        <div key={i} className="card h-64 animate-pulse">
+                            <div className="h-full bg-muted/50 rounded-xl" />
                         </div>
                     ))}
                 </div>
             ) : resumes.length === 0 ? (
-                <div className="card text-center py-12">
-                    <FiFileText size={64} className="mx-auto mb-4 text-sky/50" />
-                    <h3 className="text-lg font-semibold text-sky/70 mb-2">No resumes yet</h3>
-                    <p className="text-sky/50 mb-4">
-                        Generate your first AI-powered resume
+                <div className="text-center py-20 bg-card rounded-xl border border-border shadow-sm">
+                    <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <Icon icon="mdi:file-document-outline" width="32" className="text-muted-foreground" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">No resumes yet</h3>
+                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                        Create your first AI-tailored resume by pasting a job description.
                     </p>
-                    {isProfileComplete && (
+                    {isProfileComplete ? (
                         <button className="btn btn-primary" onClick={() => setShowGenerateModal(true)}>
-                            <FiZap size={18} />
                             Generate Resume
                         </button>
+                    ) : (
+                        <Link to="/profile/setup" className="btn btn-primary">
+                            Setup Profile
+                        </Link>
                     )}
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {resumes.map(resume => (
-                        <div key={resume.id} className="card">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center gap-2">
-                                    {getStatusIcon(resume.status)}
-                                    <h3 className="font-semibold">{resume.title}</h3>
-                                </div>
-                                {resume.match_score && (
-                                    <div className={`score-badge ${getScoreClass(resume.match_score)}`}>
-                                        {Math.round(resume.match_score)}%
+                        <div key={resume.id} className="card group hover:shadow-lg transition-all duration-200">
+                            <div className="p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="mb-2">
+                                        <h3 className="font-semibold text-lg line-clamp-1" title={resume.title}>
+                                            {resume.title}
+                                        </h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            {new Date(resume.created_at).toLocaleDateString()}
+                                        </span>
                                     </div>
-                                )}
+                                    <div className="flex gap-2">
+                                        {getStatusIcon(resume.status)}
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-2 mb-6">
+                                    <span className={`text-xs font-semibold px-2 py-1 rounded-full bg-secondary text-secondary-foreground`}>
+                                        Match Score: {resume.match_score || 'N/A'}
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center gap-3 pt-4 border-t border-border">
+                                    <button
+                                        className="btn btn-secondary flex-1 text-xs h-8"
+                                        onClick={() => window.open(`/resumes/${resume.id}`, '_blank')}
+                                    >
+                                        <Icon icon="mdi:eye" width="14" /> View
+                                    </button>
+                                    <button
+                                        className="btn btn-primary flex-1 text-xs h-8"
+                                        onClick={() => handleDownloadPDF(resume)}
+                                        disabled={resume.status !== 'COMPLETED'}
+                                    >
+                                        <Icon icon="mdi:download" width="14" /> Download
+                                    </button>
+                                </div>
                             </div>
-
-                            <p className="text-sky/60 text-sm">
-                                Created {new Date(resume.created_at).toLocaleDateString()}
-                            </p>
-
-                            {resume.status === 'COMPLETED' && (
-                                <div className="flex items-center gap-2 mt-6">
-                                    <button className="btn btn-primary" onClick={() => handleDownloadPDF(resume)}>
-                                        <FiDownload size={16} />
-                                        Download PDF
-                                    </button>
-                                    <button className="btn btn-secondary">
-                                        <FiEye size={16} />
-                                        Preview
-                                    </button>
-                                </div>
-                            )}
-
-                            {resume.status === 'PROCESSING' && (
-                                <div className="flex items-center gap-2 mt-6 text-cream">
-                                    <div className="spinner" />
-                                    Generating...
-                                </div>
-                            )}
                         </div>
                     ))}
                 </div>
             )}
 
+            {/* Generate Modal */}
             {showGenerateModal && (
-                <GenerateModal
-                    onClose={() => setShowGenerateModal(false)}
-                    onGenerate={handleGenerate}
-                    isGenerating={!!generating}
-                />
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+                    <div className="bg-card w-full max-w-lg rounded-xl shadow-lg border border-border p-6 animate-fade-in-up">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-bold">Generate New Resume</h2>
+                            <button
+                                onClick={() => setShowGenerateModal(false)}
+                                className="text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                <Icon icon="mdi:close" width="20" />
+                            </button>
+                        </div>
+
+                        <GenerateForm onSubmit={handleGenerate} onCancel={() => setShowGenerateModal(false)} />
+                    </div>
+                </div>
             )}
         </div>
     );
 }
 
-function GenerateModal({ onClose, onGenerate, isGenerating }) {
-    const [title, setTitle] = useState('');
+function GenerateForm({ onSubmit, onCancel }) {
     const [jobDescription, setJobDescription] = useState('');
+    const [title, setTitle] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onGenerate(jobDescription, title);
+        if (jobDescription.trim()) {
+            onSubmit(jobDescription, title);
+        }
     };
 
     return (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-6" onClick={onClose}>
-            <div className="bg-navy-dark border border-sky/20 rounded-lg max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-lg" onClick={e => e.stopPropagation()}>
-                <div className="flex items-center justify-between p-6 border-b border-sky/10">
-                    <h2 className="text-xl font-bold">Generate New Resume</h2>
-                    <button className="btn btn-ghost p-2" onClick={onClose}>×</button>
-                </div>
-
-                <form onSubmit={handleSubmit}>
-                    <div className="p-6 space-y-4">
-                        <div>
-                            <label className="form-label">Resume Title</label>
-                            <input
-                                type="text"
-                                className="form-input"
-                                value={title}
-                                onChange={e => setTitle(e.target.value)}
-                                placeholder="e.g., Software Engineer - Google"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="form-label">Target Job Description (Optional)</label>
-                            <textarea
-                                className="form-textarea"
-                                value={jobDescription}
-                                onChange={e => setJobDescription(e.target.value)}
-                                placeholder="Paste the job description to tailor your resume..."
-                                rows={6}
-                            />
-                            <p className="text-sky/50 mt-2 text-xs">
-                                Adding a job description helps our AI optimize your resume for that specific role.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="flex justify-end gap-3 p-6 border-t border-sky/10">
-                        <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
-                        <button type="submit" className="btn btn-primary" disabled={isGenerating}>
-                            {isGenerating ? <><span className="spinner" /> Generating...</> : <><FiZap size={18} /> Generate Resume</>}
-                        </button>
-                    </div>
-                </form>
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+                <label className="block text-sm font-medium mb-1.5 text-muted-foreground">Resume Title (Optional)</label>
+                <input
+                    type="text"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="e.g. Frontend Developer @ Google"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                />
             </div>
-        </div>
+            <div>
+                <label className="block text-sm font-medium mb-1.5 text-muted-foreground">Job Description</label>
+                <textarea
+                    className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Paste the job description here..."
+                    value={jobDescription}
+                    onChange={(e) => setJobDescription(e.target.value)}
+                    required
+                />
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+                <button type="button" onClick={onCancel} className="btn btn-secondary">
+                    Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                    Generate Resume
+                </button>
+            </div>
+        </form>
     );
 }
 

@@ -36,7 +36,7 @@ class GoogleLogin(SocialLoginView):
     Returns: JWT tokens
     """
     adapter_class = GoogleOAuth2Adapter
-    callback_url = "http://localhost:5173/oauth/callback"
+    callback_url = f"{settings.FRONTEND_URL}/oauth/callback"
     client_class = OAuth2Client
 
 
@@ -48,7 +48,7 @@ class GitHubLogin(SocialLoginView):
     Returns: JWT tokens
     """
     adapter_class = GitHubOAuth2Adapter
-    callback_url = "http://localhost:5173/oauth/callback"
+    callback_url = f"{settings.FRONTEND_URL}/oauth/callback"
     client_class = OAuth2Client
 
 
@@ -69,7 +69,7 @@ class OAuthCallbackView(APIView):
             refresh_token = str(refresh)
             
             # Redirect to frontend with tokens
-            frontend_url = "http://localhost:5173/oauth/callback"
+            frontend_url = f"{settings.FRONTEND_URL}/oauth/callback"
             return redirect(f"{frontend_url}?access={access_token}&refresh={refresh_token}")
         
         # If not authenticated, redirect to login

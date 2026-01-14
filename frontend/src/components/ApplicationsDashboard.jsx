@@ -20,16 +20,16 @@ import {
 } from '../store/slices/applicationsSlice';
 
 const STATUS_CONFIG = {
-    SAVED: { label: 'Saved', color: '#A8D0E6', bg: '#374785' },
-    APPLIED: { label: 'Applied', color: '#F8E9A1', bg: '#24305E' },
-    SCREENING: { label: 'Screening', color: '#A8D0E6', bg: '#374785' },
-    INTERVIEWING: { label: 'Interviewing', color: '#F8E9A1', bg: '#24305E' },
-    TECHNICAL: { label: 'Technical', color: '#F76C6C', bg: '#374785' },
-    FINAL: { label: 'Final Round', color: '#A8D0E6', bg: '#24305E' },
-    OFFER: { label: 'Offer', color: '#22c55e', bg: '#14532d' },
-    ACCEPTED: { label: 'Accepted', color: '#10b981', bg: '#064e3b' },
-    REJECTED: { label: 'Rejected', color: '#F76C6C', bg: '#24305E' },
-    WITHDRAWN: { label: 'Withdrawn', color: '#A8D0E6', bg: '#374785' }
+    SAVED: { label: 'Saved', color: 'text-muted-foreground', bg: 'bg-muted' },
+    APPLIED: { label: 'Applied', color: 'text-blue-400', bg: 'bg-blue-400/10' },
+    SCREENING: { label: 'Screening', color: 'text-purple-400', bg: 'bg-purple-400/10' },
+    INTERVIEWING: { label: 'Interviewing', color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
+    TECHNICAL: { label: 'Technical', color: 'text-orange-400', bg: 'bg-orange-400/10' },
+    FINAL: { label: 'Final Round', color: 'text-pink-400', bg: 'bg-pink-400/10' },
+    OFFER: { label: 'Offer', color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
+    ACCEPTED: { label: 'Accepted', color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+    REJECTED: { label: 'Rejected', color: 'text-red-400', bg: 'bg-red-400/10' },
+    WITHDRAWN: { label: 'Withdrawn', color: 'text-gray-400', bg: 'bg-gray-400/10' }
 };
 
 const STATUS_ORDER = ['SAVED', 'APPLIED', 'SCREENING', 'INTERVIEWING', 'TECHNICAL', 'FINAL', 'OFFER'];
@@ -75,46 +75,46 @@ function ApplicationsDashboard() {
     };
 
     return (
-        <div>
-            <div className="flex items-center justify-between mb-6">
+        <div className="container mx-auto py-8 px-4 max-w-7xl">
+            <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold">Job Applications</h1>
-                    <p className="text-sky/70 mt-2">Track your job applications and their progress</p>
+                    <h1 className="text-3xl font-bold tracking-tight">Job Applications</h1>
+                    <p className="text-muted-foreground mt-2">Track your job applications and their progress</p>
                 </div>
-                <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
-                    <FiPlus size={18} />
+                <button className="btn btn-primary gap-2" onClick={() => setShowAddModal(true)}>
+                    <Icon icon="mdi:plus" width="18" />
                     Add Application
                 </button>
             </div>
 
             {/* Stats Cards */}
             {stats && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div className="card text-center p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div className="card p-6 flex flex-col items-center justify-center">
                         <div className="text-3xl font-bold mb-1">{stats.total}</div>
-                        <div className="text-sky/60 text-sm">Total Applications</div>
+                        <div className="text-muted-foreground text-sm">Total Applications</div>
                     </div>
-                    <div className="card text-center p-6">
-                        <div className="text-3xl font-bold mb-1 text-sky">{stats.active}</div>
-                        <div className="text-sky/60 text-sm">Active</div>
+                    <div className="card p-6 flex flex-col items-center justify-center">
+                        <div className="text-3xl font-bold mb-1 text-primary">{stats.active}</div>
+                        <div className="text-muted-foreground text-sm">Active</div>
                     </div>
-                    <div className="card text-center p-6">
+                    <div className="card p-6 flex flex-col items-center justify-center">
                         <div className="text-3xl font-bold mb-1 text-emerald-500">{stats.by_status?.OFFER || 0}</div>
-                        <div className="text-sky/60 text-sm">Offers</div>
+                        <div className="text-muted-foreground text-sm">Offers</div>
                     </div>
-                    <div className="card text-center p-6">
-                        <div className="text-3xl font-bold mb-1 text-cream">{stats.by_status?.INTERVIEWING || 0}</div>
-                        <div className="text-sky/60 text-sm">Interviewing</div>
+                    <div className="card p-6 flex flex-col items-center justify-center">
+                        <div className="text-3xl font-bold mb-1 text-yellow-500">{stats.by_status?.INTERVIEWING || 0}</div>
+                        <div className="text-muted-foreground text-sm">Interviewing</div>
                     </div>
                 </div>
             )}
 
             {/* Filters */}
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-2">
-                    <FiFilter size={16} className="text-sky/50" />
+                    <Icon icon="mdi:filter-variant" width="20" className="text-muted-foreground" />
                     <select
-                        className="form-input w-auto"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         value={statusFilter}
                         onChange={e => dispatch(setStatusFilter(e.target.value))}
                     >
@@ -124,15 +124,15 @@ function ApplicationsDashboard() {
                         ))}
                     </select>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center bg-secondary rounded-lg p-1">
                     <button
-                        className={`btn px-3 py-1.5 text-xs ${viewMode === 'list' ? 'btn-primary' : 'btn-secondary'}`}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${viewMode === 'list' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                         onClick={() => dispatch(setViewMode('list'))}
                     >
                         List
                     </button>
                     <button
-                        className={`btn px-3 py-1.5 text-xs ${viewMode === 'kanban' ? 'btn-primary' : 'btn-secondary'}`}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${viewMode === 'kanban' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                         onClick={() => dispatch(setViewMode('kanban'))}
                     >
                         Kanban
@@ -142,24 +142,24 @@ function ApplicationsDashboard() {
 
             {/* Applications List */}
             {isLoading ? (
-                <div className="card">
-                    <div className="skeleton h-16 mb-3" />
-                    <div className="skeleton h-16 mb-3" />
-                    <div className="skeleton h-16" />
+                <div className="space-y-4">
+                    <div className="skeleton h-24 w-full bg-muted/20 rounded-xl animate-pulse" />
+                    <div className="skeleton h-24 w-full bg-muted/20 rounded-xl animate-pulse" />
+                    <div className="skeleton h-24 w-full bg-muted/20 rounded-xl animate-pulse" />
                 </div>
             ) : viewMode === 'list' ? (
-                <div className="card p-0">
+                <div className="card p-0 overflow-hidden">
                     {applications.length === 0 ? (
-                        <div className="text-center py-12 text-sky/50">
-                            <FiBriefcase size={48} className="mx-auto mb-4 opacity-50" />
-                            <h3 className="text-lg font-semibold text-sky/70 mb-2">No applications yet</h3>
-                            <p className="text-sky/50 mb-4">Start tracking your job applications</p>
+                        <div className="text-center py-20">
+                            <Icon icon="mdi:briefcase-outline" width="48" className="mx-auto mb-4 text-muted-foreground/50" />
+                            <h3 className="text-lg font-semibold mb-2">No applications yet</h3>
+                            <p className="text-muted-foreground mb-6">Start tracking your job applications</p>
                             <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
-                                <FiPlus size={18} /> Add Application
+                                <Icon icon="mdi:plus" width="18" className="mr-2" /> Add Application
                             </button>
                         </div>
                     ) : (
-                        <div className="divide-y divide-sky/10">
+                        <div className="divide-y divide-border">
                             {applications.map(app => (
                                 <ApplicationRow
                                     key={app.id}
@@ -195,93 +195,103 @@ function ApplicationRow({ app, onStatusUpdate, onToggleFavorite, onDelete, onEdi
     const statusConfig = STATUS_CONFIG[app.status] || STATUS_CONFIG.SAVED;
 
     return (
-        <div className="flex items-center gap-4 p-4 hover:bg-sky/5 transition-colors">
+        <div className="flex items-center gap-4 p-4 hover:bg-muted/50 transition-colors group">
             <button
-                className="p-1 text-sky/50 hover:text-cream transition-colors bg-transparent border-none cursor-pointer"
+                className="p-1 text-muted-foreground hover:text-yellow-400 transition-colors bg-transparent border-none cursor-pointer"
                 onClick={() => onToggleFavorite(app.id)}
             >
-                <FiStar size={18} fill={app.is_favorite ? "#F8E9A1" : "none"} color={app.is_favorite ? "#F8E9A1" : "currentColor"} />
+                <Icon icon={app.is_favorite ? "mdi:star" : "mdi:star-outline"} width="20" className={app.is_favorite ? "text-yellow-400" : ""} />
             </button>
 
-            <div className="flex-1 min-w-0 cursor-pointer" onClick={onEdit}>
-                <div className="flex items-center gap-2">
-                    <h4 className="font-semibold">{app.job_title}</h4>
-                    {app.job_url && (
-                        <a
-                            href={app.job_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={e => e.stopPropagation()}
-                            className="text-sky/50 hover:text-coral"
-                        >
-                            <FiExternalLink size={14} />
+            <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-1">
+                    <h3 className="font-semibold text-foreground truncate">{app.position}</h3>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${statusConfig.bg} ${statusConfig.color}`}>
+                        {statusConfig.label}
+                    </span>
+                    {app.url && (
+                        <a href={app.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+                            <Icon icon="mdi:open-in-new" width="14" />
                         </a>
                     )}
                 </div>
-                <div className="flex flex-wrap gap-4 mt-1 text-sm text-sky/60">
-                    <span className="flex items-center gap-1"><FiHome size={14} /> {app.company}</span>
-                    {app.location && <span className="flex items-center gap-1"><FiMapPin size={14} /> {app.location}</span>}
-                    {app.applied_date && <span className="flex items-center gap-1"><FiCalendar size={14} /> Applied {app.applied_date}</span>}
-                    {app.days_since_applied !== null && (
-                        <span className="flex items-center gap-1"><FiClock size={14} /> {app.days_since_applied} days ago</span>
-                    )}
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                        <Icon icon="mdi:domain" width="14" /> {app.company_name}
+                    </span>
+                    <span className="flex items-center gap-1">
+                        <Icon icon="mdi:map-marker" width="14" /> {app.location || 'Remote'}
+                    </span>
+                    <span className="flex items-center gap-1">
+                        <Icon icon="mdi:calendar" width="14" /> {new Date(app.applied_date).toLocaleDateString()}
+                    </span>
                 </div>
-                {app.resume_title && (
-                    <div className="text-sky/50 text-xs mt-1">Resume: {app.resume_title}</div>
-                )}
             </div>
 
-            <div className="flex-shrink-0">
+            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <select
-                    className="px-3 py-1.5 text-xs font-medium rounded-sm cursor-pointer border"
+                    className="h-8 rounded md:w-32 text-xs border-input bg-background"
                     value={app.status}
-                    onChange={e => onStatusUpdate(app.id, e.target.value)}
-                    style={{ background: statusConfig.bg, color: statusConfig.color, borderColor: statusConfig.color }}
+                    onChange={(e) => onStatusUpdate(app.id, e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
                 >
                     {Object.entries(STATUS_CONFIG).map(([key, { label }]) => (
                         <option key={key} value={key}>{label}</option>
                     ))}
                 </select>
+                <button className="btn btn-secondary h-8 w-8 p-0" onClick={onEdit}>
+                    <Icon icon="mdi:pencil" width="14" />
+                </button>
+                <button className="btn h-8 w-8 p-0 text-destructive hover:bg-destructive/10" onClick={() => onDelete(app.id)}>
+                    <Icon icon="mdi:delete" width="14" />
+                </button>
             </div>
-
-            <button className="btn btn-ghost p-2" onClick={() => onDelete(app.id)}>
-                <FiTrash2 size={16} />
-            </button>
         </div>
     );
 }
 
 function KanbanView({ applications, onStatusUpdate }) {
-    const allApps = useSelector(state => state.applications.items);
+    const columns = STATUS_ORDER;
 
     return (
         <div className="flex gap-4 overflow-x-auto pb-4">
-            {STATUS_ORDER.map(status => {
+            {columns.map(status => {
+                const statusApps = applications.filter(app => app.status === status);
                 const config = STATUS_CONFIG[status];
-                const apps = allApps.filter(a => a.status === status);
 
                 return (
-                    <div key={status} className="flex-shrink-0 w-72 bg-dark-card border border-sky/20 rounded flex flex-col max-h-[70vh]">
-                        <div
-                            className="p-4 border-b-2 flex items-center justify-between font-semibold"
-                            style={{ borderColor: config.color }}
-                        >
-                            <span>{config.label}</span>
-                            <span className="bg-navy px-2 py-0.5 rounded-full text-xs">{apps.length}</span>
+                    <div key={status} className="min-w-[300px] w-[300px] flex-shrink-0 bg-secondary/30 rounded-xl p-4 border border-border">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-semibold text-sm flex items-center gap-2">
+                                <span className={`w-2 h-2 rounded-full ${config.bg.replace('/10', '')}`} />
+                                {config.label}
+                            </h3>
+                            <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
+                                {statusApps.length}
+                            </span>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-2 space-y-2">
-                            {apps.map(app => (
-                                <div
-                                    key={app.id}
-                                    className="bg-navy border border-sky/20 rounded-sm p-3 cursor-pointer hover:border-coral hover:-translate-y-0.5 transition-all"
-                                >
-                                    <h4 className="text-sm font-medium mb-1">{app.job_title}</h4>
-                                    <p className="text-sky/60 text-xs">{app.company}</p>
-                                    {app.applied_date && (
-                                        <p className="text-sky/50 text-xs mt-1">{app.applied_date}</p>
-                                    )}
+
+                        <div className="space-y-3">
+                            {statusApps.map(app => (
+                                <div key={app.id} className="card p-3 bg-card hover:border-primary/50 cursor-grab active:cursor-grabbing">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h4 className="font-medium text-sm">{app.position}</h4>
+                                        {app.is_favorite && <Icon icon="mdi:star" className="text-yellow-400" width="14" />}
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mb-2">{app.company_name}</p>
+                                    <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                                        <span>{new Date(app.applied_date).toLocaleDateString()}</span>
+                                        <div className="flex gap-1">
+                                            {/* Quick Actions if needed */}
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
+                            {statusApps.length === 0 && (
+                                <div className="text-center py-8 border-2 border-dashed border-border rounded-lg">
+                                    <p className="text-xs text-muted-foreground">No applications</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 );
@@ -291,130 +301,129 @@ function KanbanView({ applications, onStatusUpdate }) {
 }
 
 function ApplicationModal({ application, onClose, onSave }) {
-    const isEditing = !!application;
-    const [formData, setFormData] = useState(application || {
-        job_title: '',
-        company: '',
-        job_url: '',
+    const [formData, setFormData] = useState({
+        company_name: '',
+        position: '',
         location: '',
-        salary_range: '',
-        job_type: '',
-        status: 'SAVED',
-        applied_date: '',
+        status: 'APPLIED',
+        applied_date: new Date().toISOString().split('T')[0],
+        url: '',
         notes: '',
+        salary_range: ''
     });
-    const [saving, setSaving] = useState(false);
 
-    const handleSubmit = async (e) => {
+    useEffect(() => {
+        if (application) {
+            setFormData({
+                ...application,
+                applied_date: application.applied_date ? new Date(application.applied_date).toISOString().split('T')[0] : ''
+            });
+        }
+    }, [application]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = (e) => {
         e.preventDefault();
-        setSaving(true);
-        await onSave(formData, isEditing);
-        setSaving(false);
+        onSave(formData, !!application);
     };
 
     return (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-6" onClick={onClose}>
-            <div className="bg-navy-dark border border-sky/20 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-lg" onClick={e => e.stopPropagation()}>
-                <div className="flex items-center justify-between p-6 border-b border-sky/10">
-                    <h2 className="text-xl font-bold">{isEditing ? 'Edit Application' : 'Add Application'}</h2>
-                    <button className="btn btn-ghost p-2" onClick={onClose}>×</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+            <div className="bg-card w-full max-w-lg rounded-xl shadow-lg border border-border p-6 animate-fade-in-up max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold">{application ? 'Edit Application' : 'Add Application'}</h2>
+                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
+                        <Icon icon="mdi:close" width="20" />
+                    </button>
                 </div>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="p-6 space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="form-label">Job Title *</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    value={formData.job_title}
-                                    onChange={e => setFormData({ ...formData, job_title: e.target.value })}
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="form-label">Company *</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    value={formData.company}
-                                    onChange={e => setFormData({ ...formData, company: e.target.value })}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="form-label">Job URL</label>
-                                <input
-                                    type="url"
-                                    className="form-input"
-                                    value={formData.job_url}
-                                    onChange={e => setFormData({ ...formData, job_url: e.target.value })}
-                                />
-                            </div>
-                            <div>
-                                <label className="form-label">Location</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    value={formData.location}
-                                    onChange={e => setFormData({ ...formData, location: e.target.value })}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <label className="form-label">Status</label>
-                                <select
-                                    className="form-input"
-                                    value={formData.status}
-                                    onChange={e => setFormData({ ...formData, status: e.target.value })}
-                                >
-                                    {Object.entries(STATUS_CONFIG).map(([key, { label }]) => (
-                                        <option key={key} value={key}>{label}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="form-label">Applied Date</label>
-                                <input
-                                    type="date"
-                                    className="form-input"
-                                    value={formData.applied_date || ''}
-                                    onChange={e => setFormData({ ...formData, applied_date: e.target.value })}
-                                />
-                            </div>
-                            <div>
-                                <label className="form-label">Salary Range</label>
-                                <input
-                                    type="text"
-                                    className="form-input"
-                                    value={formData.salary_range}
-                                    onChange={e => setFormData({ ...formData, salary_range: e.target.value })}
-                                    placeholder="$100k - $150k"
-                                />
-                            </div>
-                        </div>
-
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="form-label">Notes</label>
-                            <textarea
-                                className="form-textarea"
-                                value={formData.notes}
-                                onChange={e => setFormData({ ...formData, notes: e.target.value })}
-                                rows={3}
+                            <label className="block text-sm font-medium mb-1.5 text-muted-foreground">Company</label>
+                            <input
+                                type="text"
+                                name="company_name"
+                                required
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                value={formData.company_name}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1.5 text-muted-foreground">Position</label>
+                            <input
+                                type="text"
+                                name="position"
+                                required
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                value={formData.position}
+                                onChange={handleChange}
                             />
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-3 p-6 border-t border-sky/10">
-                        <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
-                        <button type="submit" className="btn btn-primary" disabled={saving}>
-                            {saving ? <span className="spinner" /> : (isEditing ? 'Save Changes' : 'Add Application')}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1.5 text-muted-foreground">Status</label>
+                            <select
+                                name="status"
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                value={formData.status}
+                                onChange={handleChange}
+                            >
+                                {Object.entries(STATUS_CONFIG).map(([key, { label }]) => (
+                                    <option key={key} value={key}>{label}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1.5 text-muted-foreground">Date Applied</label>
+                            <input
+                                type="date"
+                                name="applied_date"
+                                required
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                value={formData.applied_date}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-1.5 text-muted-foreground">Job URL</label>
+                        <input
+                            type="url"
+                            name="url"
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            value={formData.url || ''}
+                            onChange={handleChange}
+                            placeholder="https://..."
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-1.5 text-muted-foreground">Location</label>
+                        <input
+                            type="text"
+                            name="location"
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            value={formData.location || ''}
+                            onChange={handleChange}
+                            placeholder="e.g. Remote, New York"
+                        />
+                    </div>
+
+                    <div className="flex justify-end gap-3 mt-6">
+                        <button type="button" onClick={onClose} className="btn btn-secondary">
+                            Cancel
+                        </button>
+                        <button type="submit" className="btn btn-primary">
+                            {application ? 'Update' : 'Create'}
                         </button>
                     </div>
                 </form>

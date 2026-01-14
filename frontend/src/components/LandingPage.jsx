@@ -275,7 +275,7 @@ function LandingPage() {
                 <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="text-2xl font-bold text-coral">Resume Agent</div>
                     <p className="text-sky/50 text-sm">
-                        © 2024 Resume Agent. All rights reserved.
+                        © {new Date().getFullYear()} Resume Agent. All rights reserved.
                     </p>
                     <div className="flex gap-8">
                         <a href="#" className="text-sky/50 hover:text-coral transition-colors">Privacy</a>

@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FiFileText, FiBriefcase, FiUser, FiLogOut, FiLayout, FiClipboard } from 'react-icons/fi';
+import { Icon } from '@iconify/react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectIsAuthenticated, selectUser, logout } from '../store/slices/authSlice';
 
@@ -28,7 +28,7 @@ function Header() {
             <div className="max-w-7xl mx-auto flex items-center justify-between">
                 <Link to="/" className="flex items-center gap-2 text-xl font-bold text-coral">
                     <div className="w-8 h-8 bg-coral rounded flex items-center justify-center">
-                        <FiFileText size={18} color="white" />
+                        <Icon icon="mdi:file-document" width="18" className="text-white" />
                     </div>
                     Resume Agent
                 </Link>
@@ -37,26 +37,26 @@ function Header() {
                     {isAuthenticated ? (
                         <>
                             <Link to="/dashboard" className={navLinkClass('/dashboard')}>
-                                <FiLayout size={16} />
+                                <Icon icon="mdi:view-dashboard" width="16" />
                                 Resumes
                             </Link>
                             <Link to="/applications" className={navLinkClass('/applications')}>
-                                <FiClipboard size={16} />
+                                <Icon icon="mdi:clipboard-text" width="16" />
                                 Applications
                             </Link>
                             <Link to="/jobs" className={navLinkClass('/jobs', false)}>
-                                <FiBriefcase size={16} />
+                                <Icon icon="mdi:briefcase" width="16" />
                                 Jobs
                             </Link>
                             <Link to="/profile/setup" className={navLinkClass('/profile', false)}>
-                                <FiUser size={16} />
+                                <Icon icon="mdi:account" width="16" />
                                 Profile
                             </Link>
                             <button
                                 className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-sky hover:text-white hover:bg-navy/50 rounded transition-all duration-150 border-none bg-transparent cursor-pointer"
                                 onClick={handleLogout}
                             >
-                                <FiLogOut size={16} />
+                                <Icon icon="mdi:logout" width="16" />
                                 Logout
                             </button>
                         </>

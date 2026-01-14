@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiPlus, FiFileText, FiDownload, FiEye, FiZap, FiClock, FiCheckCircle, FiXCircle } from 'react-icons/fi';
+import { Icon } from '@iconify/react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUser } from '../store/slices/authSlice';
 import { fetchResumes, generateResume, checkResumeStatus, selectResumes, selectResumesLoading, selectGenerating, selectResumesError, clearError } from '../store/slices/resumesSlice';

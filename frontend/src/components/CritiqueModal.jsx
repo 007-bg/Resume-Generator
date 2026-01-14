@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiX, FiCheckCircle, FiAlertTriangle, FiInfo, FiFileText, FiTrendingUp, FiTarget } from 'react-icons/fi';
+import { Icon } from '@iconify/react';
 import { getCandidate } from '../api/client';
 
 function CritiqueModal({ candidateId, candidateName, onClose }) {

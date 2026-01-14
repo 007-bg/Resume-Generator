@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiUser, FiBriefcase, FiBook, FiCode, FiAward, FiSave, FiArrowRight, FiPlus, FiTrash2 } from 'react-icons/fi';
+import { Icon } from '@iconify/react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUser } from '../store/slices/authSlice';
 import {

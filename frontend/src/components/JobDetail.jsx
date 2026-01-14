@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import {
-    FiArrowLeft, FiUpload, FiUser, FiMail, FiFileText,
-    FiTrash2, FiZap, FiClock, FiCheckCircle, FiXCircle, FiAlertCircle
-} from 'react-icons/fi';
+import { Icon } from '@iconify/react';
 import { getJob, uploadCandidate, deleteCandidate, generateCritique } from '../api/client';
 import CritiqueModal from './CritiqueModal';
 

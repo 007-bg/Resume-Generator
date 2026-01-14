@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-    FiPlus, FiBriefcase, FiStar, FiExternalLink, FiTrash2,
-    FiCalendar, FiClock, FiHome, FiMapPin, FiFilter
-} from 'react-icons/fi';
+import { Icon } from '@iconify/react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
     fetchApplications,

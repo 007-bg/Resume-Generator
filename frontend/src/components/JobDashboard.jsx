@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiPlus, FiBriefcase, FiUsers, FiCalendar, FiTrash2 } from 'react-icons/fi';
+import { Icon } from '@iconify/react';
 import { getJobs, createJob, deleteJob } from '../api/client';
 
 function JobDashboard() {

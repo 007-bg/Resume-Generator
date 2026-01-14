@@ -1,9 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
-import {
-    FiCpu, FiBarChart2, FiClipboard, FiStar, FiCheck, FiFileText,
-    FiUser, FiBriefcase, FiDownload, FiChevronDown
-} from 'react-icons/fi';
+import { Icon } from '@iconify/react';
 
 /**
  * Landing Page Component
@@ -32,14 +29,13 @@ function LandingPage() {
 
     // Parallax calculations (only active in hero section)
     const heroHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-    const isInHero = scrollY < heroHeight;
     const parallaxProgress = Math.min(scrollY / heroHeight, 1);
 
     // Different speeds for parallax layers
-    const bgParallax = scrollY * 0.3;           // Background moves slowest
-    const contentParallax = scrollY * 0.1;      // Content moves slightly
-    const mockupParallax = scrollY * 0.5;       // Mockup moves faster
-    const floatParallax = scrollY * 0.7;        // Floating elements move fastest
+    const bgParallax = scrollY * 0.3;
+    const contentParallax = scrollY * 0.1;
+    const mockupParallax = scrollY * 0.5;
+    const floatParallax = scrollY * 0.7;
 
     // Fade out scroll indicator
     const scrollIndicatorOpacity = Math.max(0, 1 - scrollY / 300);
@@ -70,7 +66,7 @@ function LandingPage() {
                         {/* Left: Text Content */}
                         <div className="text-center lg:text-left">
                             <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-navy border border-sky/30 rounded-full text-xs md:text-sm text-sky mb-6 md:mb-8 mx-auto lg:mx-0">
-                                <FiStar className="text-coral" size={14} />
+                                <Icon icon="mdi:star-four-points" className="text-coral" width="14" />
                                 AI-Powered Resume Generation
                             </div>
 
@@ -113,7 +109,6 @@ function LandingPage() {
                                 >
                                     {/* Resume Content Mockup */}
                                     <div className="p-6 h-full flex flex-col">
-                                        {/* Header */}
                                         <div className="flex items-center gap-4 mb-6">
                                             <div className="w-16 h-16 rounded-full bg-coral" />
                                             <div className="flex-1">
@@ -121,15 +116,11 @@ function LandingPage() {
                                                 <div className="h-3 w-24 bg-sky/30 rounded" />
                                             </div>
                                         </div>
-
-                                        {/* Summary */}
                                         <div className="mb-6">
                                             <div className="h-3 w-full bg-gray-200 rounded mb-2" />
                                             <div className="h-3 w-11/12 bg-gray-200 rounded mb-2" />
                                             <div className="h-3 w-3/4 bg-gray-200 rounded" />
                                         </div>
-
-                                        {/* Experience */}
                                         <div className="mb-6">
                                             <div className="h-4 w-24 bg-coral rounded mb-3" />
                                             <div className="flex items-center gap-3 mb-2">
@@ -145,8 +136,6 @@ function LandingPage() {
                                                 <div className="h-3 w-32 bg-gray-200 rounded" />
                                             </div>
                                         </div>
-
-                                        {/* Skills */}
                                         <div className="mt-auto">
                                             <div className="h-4 w-16 bg-sky rounded mb-3" />
                                             <div className="flex flex-wrap gap-2">
@@ -157,7 +146,6 @@ function LandingPage() {
                                             </div>
                                         </div>
                                     </div>
-
                                     <div className="absolute inset-0 rounded-lg border-2 border-coral/20 pointer-events-none" />
                                 </div>
 
@@ -176,19 +164,19 @@ function LandingPage() {
                                     className="absolute -top-8 -right-8 w-16 h-16 bg-coral rounded-lg shadow-lg flex items-center justify-center"
                                     style={{ transform: `translateY(${floatParallax * 0.3}px)`, animation: 'float3d 3s ease-in-out infinite' }}
                                 >
-                                    <FiCpu size={28} className="text-white" />
+                                    <Icon icon="mdi:robot" width="28" className="text-white" />
                                 </div>
                                 <div
                                     className="absolute -bottom-4 -left-8 w-14 h-14 bg-sky rounded-lg shadow-lg flex items-center justify-center"
                                     style={{ transform: `translateY(${floatParallax * 0.4}px)`, animation: 'float3d 3.5s ease-in-out infinite reverse' }}
                                 >
-                                    <FiCheck size={24} className="text-navy-dark" />
+                                    <Icon icon="mdi:check-bold" width="24" className="text-navy-dark" />
                                 </div>
                                 <div
                                     className="absolute top-1/2 -right-12 w-12 h-12 bg-cream rounded-full shadow-lg flex items-center justify-center"
                                     style={{ transform: `translateY(${floatParallax * 0.2}px)`, animation: 'float3d 4s ease-in-out infinite' }}
                                 >
-                                    <FiFileText size={20} className="text-navy-dark" />
+                                    <Icon icon="mdi:file-document" width="20" className="text-navy-dark" />
                                 </div>
                             </div>
                         </div>
@@ -208,7 +196,7 @@ function LandingPage() {
                 </div>
             </section>
 
-            {/* Features Section - No Parallax */}
+            {/* Features Section */}
             <section id="features" className="py-20 md:py-32 px-6 md:px-16 lg:px-24 bg-navy-dark relative w-full">
                 <div className="absolute top-0 left-0 right-0 h-px bg-sky/20" />
 
@@ -227,17 +215,20 @@ function LandingPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[
                         {
-                            icon: <FiCpu size={28} className="text-coral" />,
+                            icon: 'mdi:robot',
+                            color: 'text-coral',
                             title: 'AI Resume Generation',
                             description: 'Our multi-agent system crafts personalized resumes tailored to each job description, optimized for ATS systems.'
                         },
                         {
-                            icon: <FiBarChart2 size={28} className="text-sky" />,
+                            icon: 'mdi:chart-bar',
+                            color: 'text-sky',
                             title: 'Job Match Analysis',
                             description: 'Get instant match scores and detailed analysis of how your profile aligns with job requirements.'
                         },
                         {
-                            icon: <FiClipboard size={28} className="text-cream" />,
+                            icon: 'mdi:clipboard-text',
+                            color: 'text-cream',
                             title: 'Application Tracker',
                             description: 'Track all your applications in one place with our intuitive Kanban board and analytics dashboard.'
                         }
@@ -246,8 +237,8 @@ function LandingPage() {
                             key={index}
                             className="group p-8 bg-navy border border-sky/20 rounded-xl hover:-translate-y-2 hover:border-coral/50 transition-all duration-300"
                         >
-                            <div className="w-16 h-16 bg-navy-dark rounded-xl flex items-center justify-center mb-6 text-3xl border border-sky/20">
-                                {feature.icon}
+                            <div className="w-16 h-16 bg-navy-dark rounded-xl flex items-center justify-center mb-6 border border-sky/20">
+                                <Icon icon={feature.icon} width="28" className={feature.color} />
                             </div>
                             <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
                             <p className="text-sky/70 leading-relaxed">{feature.description}</p>
@@ -271,13 +262,12 @@ function LandingPage() {
                 </div>
 
                 <div className="flex flex-col lg:flex-row justify-between gap-8 lg:gap-12 relative">
-                    {/* Connecting line - one gradient accent */}
                     <div className="hidden lg:block absolute top-12 left-[15%] right-[15%] h-1 bg-gradient-to-r from-coral via-cream to-sky z-0 rounded-full" />
 
                     {[
-                        { num: 1, title: 'Add Your Profile', desc: 'Enter your experience, skills, and achievements once. We\'ll use this as your "ground truth" for all resumes.' },
-                        { num: 2, title: 'Paste Job Description', desc: 'Found a job you like? Paste the description and our AI analyzes the requirements instantly.' },
-                        { num: 3, title: 'Download & Apply', desc: 'Get a tailored, ATS-optimized resume in seconds. Download as PDF and start applying!' }
+                        { num: 1, icon: 'mdi:account-edit', title: 'Add Your Profile', desc: 'Enter your experience, skills, and achievements once. We\'ll use this as your "ground truth" for all resumes.' },
+                        { num: 2, icon: 'mdi:text-box-search', title: 'Paste Job Description', desc: 'Found a job you like? Paste the description and our AI analyzes the requirements instantly.' },
+                        { num: 3, icon: 'mdi:download', title: 'Download & Apply', desc: 'Get a tailored, ATS-optimized resume in seconds. Download as PDF and start applying!' }
                     ].map((step, index) => (
                         <div key={index} className="flex-1 text-center relative z-10">
                             <div className="w-24 h-24 bg-coral rounded-full flex items-center justify-center text-3xl font-bold text-white mx-auto mb-8">
@@ -326,30 +316,30 @@ function LandingPage() {
 
             {/* Custom CSS for Animations */}
             <style>{`
-            @keyframes float3d {
-                0%, 100% {
-                    transform: rotateY(-15deg) rotateX(5deg) translateY(0);
+                @keyframes float3d {
+                    0%, 100% {
+                        transform: rotateY(-15deg) rotateX(5deg) translateY(0);
+                    }
+                    50% {
+                        transform: rotateY(-12deg) rotateX(3deg) translateY(-20px);
+                    }
                 }
-                50% {
-                    transform: rotateY(-12deg) rotateX(3deg) translateY(-20px);
+                
+                @keyframes scroll-wheel {
+                    0% {
+                        transform: translateY(0);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translateY(15px);
+                        opacity: 0;
+                    }
                 }
-            }
-            
-            @keyframes scroll-wheel {
-                0% {
-                    transform: translateY(0);
-                    opacity: 1;
-                }
-                100% {
-                    transform: translateY(15px);
-                    opacity: 0;
-                }
-            }
 
-            .animate-scroll-wheel {
-                animation: scroll-wheel 1.5s ease-in-out infinite;
-            }
-        `}</style>
+                .animate-scroll-wheel {
+                    animation: scroll-wheel 1.5s ease-in-out infinite;
+                }
+            `}</style>
         </div>
     );
 }

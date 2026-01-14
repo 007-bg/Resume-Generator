@@ -37,33 +37,61 @@ A full-stack AI-powered resume generation and job application tracking system wi
 ## Quick Start
 
 ### Prerequisites
-- Python 3.10+
+- Python 3.11 (Required for dependencies)
 - Node.js 18+
-- Redis
+- Docker (for Redis)
+- Pipenv (`pip install pipenv`)
 
-### Backend
+### Backend Setup
 
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-python -m spacy download en_core_web_sm
+1. **Install Dependencies**
+   ```bash
+   cd backend
+   pipenv install
+   ```
 
-cp .env.example .env  # Edit with your keys
-python manage.py migrate
-python manage.py runserver
-```
+2. **Environment Setup**
+   ```bash
+   cp .env.example .env
+   # Update .env with your API keys (OpenAI/HuggingFace)
+   ```
 
-### Celery Worker
+3. **Database & Admin**
+   ```bash
+   pipenv shell
+   python manage.py migrate
+   python manage.py createsuperuser
+   ```
 
-```bash
-# Terminal 1: Redis
-redis-server
+4. **Run Server**
+   ```bash
+   python manage.py runserver
+   ```
 
-# Terminal 2: Celery
-cd backend && celery -A core worker -l info
-```
+### Background Services (Required for Agents)
+
+1. **Start Redis**
+
+   **Option 1: Docker (Recommended)**
+   ```bash
+   docker run -d -p 6379:6379 --name redis-resume redis
+   ```
+
+   **Option 2: Native Installation**
+   - **Windows:** Install [Memurai](https://www.memurai.com/) (Developer Edition) or run Redis via WSL.
+   - **Mac/Linux:** `brew install redis` or `sudo apt-get install redis-server`.
+   - Start the service: `redis-server`
+
+2. **Start Celery Worker**
+   Open a new terminal in `backend`:
+   ```bash
+   pipenv shell
+   # Windows (Critical: use --pool=solo)
+   celery -A core worker -l info --pool=solo
+   
+   # Linux/Mac
+   # celery -A core worker -l info
+   ```
 
 ### Frontend
 

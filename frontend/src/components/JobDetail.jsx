@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
-    ArrowLeft, Upload, User, Mail, FileText,
-    Trash2, Zap, Clock, CheckCircle, XCircle, AlertCircle
-} from 'lucide-react';
+    FiArrowLeft, FiUpload, FiUser, FiMail, FiFileText,
+    FiTrash2, FiZap, FiClock, FiCheckCircle, FiXCircle, FiAlertCircle
+} from 'react-icons/fi';
 import { getJob, uploadCandidate, deleteCandidate, generateCritique } from '../api/client';
 import CritiqueModal from './CritiqueModal';
 
@@ -81,28 +81,28 @@ function JobDetail() {
 
     const getStatusIcon = (status) => {
         switch (status) {
-            case 'COMPLETED': return <CheckCircle size={14} />;
-            case 'PROCESSING': return <Clock size={14} />;
-            case 'FAILED': return <XCircle size={14} />;
-            default: return <AlertCircle size={14} />;
+            case 'COMPLETED': return <FiCheckCircle size={14} />;
+            case 'PROCESSING': return <FiClock size={14} />;
+            case 'FAILED': return <FiXCircle size={14} />;
+            default: return <FiAlertCircle size={14} />;
         }
     };
 
     if (isLoading) {
         return (
             <div className="card">
-                <div className="skeleton" style={{ height: 32, width: '40%', marginBottom: 16 }} />
-                <div className="skeleton" style={{ height: 20, width: '30%', marginBottom: 32 }} />
-                <div className="skeleton" style={{ height: 200, width: '100%' }} />
+                <div className="skeleton h-8 w-2/5 mb-4" />
+                <div className="skeleton h-5 w-[30%] mb-8" />
+                <div className="skeleton h-52 w-full" />
             </div>
         );
     }
 
     if (!job) {
         return (
-            <div className="card text-center">
-                <p>Job not found</p>
-                <Link to="/" className="btn btn-primary mt-md">Back to Dashboard</Link>
+            <div className="card text-center py-12">
+                <p className="text-sky/70">Job not found</p>
+                <Link to="/jobs" className="btn btn-primary mt-4">Back to Dashboard</Link>
             </div>
         );
     }
@@ -111,62 +111,60 @@ function JobDetail() {
 
     return (
         <div>
-            <Link to="/" className="btn btn-ghost mb-md">
-                <ArrowLeft size={16} /> Back to Jobs
+            <Link to="/jobs" className="btn btn-ghost mb-4">
+                <FiArrowLeft size={16} /> Back to Jobs
             </Link>
 
-            <div className="card mb-lg">
+            <div className="card mb-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 700 }}>
-                            {job.title}
-                        </h1>
+                        <h1 className="text-2xl font-bold">{job.title}</h1>
                         {job.company && (
-                            <p className="text-secondary mt-sm">{job.company}</p>
+                            <p className="text-sky/70 mt-2">{job.company}</p>
                         )}
                     </div>
                     <button
                         className="btn btn-primary"
                         onClick={() => setShowUploadModal(true)}
                     >
-                        <Upload size={18} />
+                        <FiUpload size={18} />
                         Upload Resume
                     </button>
                 </div>
 
-                <p className="text-secondary mt-lg" style={{ whiteSpace: 'pre-wrap' }}>
+                <p className="text-sky/60 mt-6 whitespace-pre-wrap">
                     {job.description}
                 </p>
 
                 {job.requirements && (
-                    <div className="mt-lg">
-                        <h4 className="text-secondary mb-sm">Requirements</h4>
-                        <p style={{ whiteSpace: 'pre-wrap' }}>{job.requirements}</p>
+                    <div className="mt-6">
+                        <h4 className="text-sky/70 font-medium mb-2">Requirements</h4>
+                        <p className="whitespace-pre-wrap">{job.requirements}</p>
                     </div>
                 )}
             </div>
 
-            <div className="flex items-center justify-between mb-md">
-                <h2 style={{ fontSize: 'var(--font-size-xl)', fontWeight: 600 }}>
+            <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">
                     Candidates ({candidates.length})
                 </h2>
             </div>
 
             {candidates.length === 0 ? (
-                <div className="card empty-state">
-                    <User size={48} className="empty-state-icon" />
-                    <h3 className="empty-state-title">No candidates yet</h3>
-                    <p className="text-muted mb-md">Upload resumes to start analyzing</p>
+                <div className="card text-center py-12">
+                    <FiUser size={48} className="mx-auto mb-4 text-sky/50" />
+                    <h3 className="text-lg font-semibold text-sky/70 mb-2">No candidates yet</h3>
+                    <p className="text-sky/50 mb-4">Upload resumes to start analyzing</p>
                     <button
                         className="btn btn-primary"
                         onClick={() => setShowUploadModal(true)}
                     >
-                        <Upload size={18} />
+                        <FiUpload size={18} />
                         Upload Resume
                     </button>
                 </div>
             ) : (
-                <div className="grid-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {candidates.map((candidate) => {
                         const isProcessing = processingIds.has(candidate.id) ||
                             candidate.critique_status === 'PROCESSING';
@@ -174,25 +172,15 @@ function JobDetail() {
                         return (
                             <div key={candidate.id} className="card">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-md">
-                                        <div
-                                            style={{
-                                                width: 40,
-                                                height: 40,
-                                                borderRadius: '50%',
-                                                background: 'var(--accent-gradient)',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center'
-                                            }}
-                                        >
-                                            <User size={20} color="white" />
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-full bg-coral flex items-center justify-center">
+                                            <FiUser size={20} color="white" />
                                         </div>
                                         <div>
-                                            <h3 style={{ fontWeight: 600 }}>{candidate.name}</h3>
+                                            <h3 className="font-semibold">{candidate.name}</h3>
                                             {candidate.email && (
-                                                <p className="text-muted flex items-center gap-sm" style={{ fontSize: 'var(--font-size-sm)' }}>
-                                                    <Mail size={12} /> {candidate.email}
+                                                <p className="text-sky/60 text-sm flex items-center gap-1">
+                                                    <FiMail size={12} /> {candidate.email}
                                                 </p>
                                             )}
                                         </div>
@@ -205,7 +193,7 @@ function JobDetail() {
                                     )}
                                 </div>
 
-                                <div className="flex items-center gap-md mt-lg">
+                                <div className="flex items-center gap-4 mt-6">
                                     {candidate.critique_status && (
                                         <span className={`status-badge status-${candidate.critique_status.toLowerCase()}`}>
                                             {getStatusIcon(candidate.critique_status)}
@@ -214,13 +202,13 @@ function JobDetail() {
                                     )}
                                 </div>
 
-                                <div className="flex items-center gap-sm mt-md">
+                                <div className="flex items-center gap-2 mt-4">
                                     {candidate.critique_status === 'COMPLETED' ? (
                                         <button
                                             className="btn btn-primary"
                                             onClick={() => setSelectedCandidate(candidate)}
                                         >
-                                            <FileText size={16} />
+                                            <FiFileText size={16} />
                                             View Analysis
                                         </button>
                                     ) : (
@@ -236,7 +224,7 @@ function JobDetail() {
                                                 </>
                                             ) : (
                                                 <>
-                                                    <Zap size={16} />
+                                                    <FiZap size={16} />
                                                     Analyze Resume
                                                 </>
                                             )}
@@ -244,10 +232,10 @@ function JobDetail() {
                                     )}
 
                                     <button
-                                        className="btn btn-ghost btn-icon"
+                                        className="btn btn-ghost p-2"
                                         onClick={() => handleDelete(candidate.id)}
                                     >
-                                        <Trash2 size={16} />
+                                        <FiTrash2 size={16} />
                                     </button>
                                 </div>
                             </div>
@@ -294,16 +282,16 @@ function UploadModal({ onClose, onUpload }) {
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h2>Upload Resume</h2>
-                    <button className="btn btn-ghost btn-icon" onClick={onClose}>×</button>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-6" onClick={onClose}>
+            <div className="bg-navy-dark border border-sky/20 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-lg" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-6 border-b border-sky/10">
+                    <h2 className="text-xl font-bold">Upload Resume</h2>
+                    <button className="btn btn-ghost p-2" onClick={onClose}>×</button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="modal-body">
-                        <div className="form-group">
+                    <div className="p-6 space-y-4">
+                        <div>
                             <label className="form-label">Candidate Name *</label>
                             <input
                                 type="text"
@@ -315,7 +303,7 @@ function UploadModal({ onClose, onUpload }) {
                             />
                         </div>
 
-                        <div className="form-group">
+                        <div>
                             <label className="form-label">Email</label>
                             <input
                                 type="email"
@@ -326,19 +314,19 @@ function UploadModal({ onClose, onUpload }) {
                             />
                         </div>
 
-                        <div className="form-group">
+                        <div>
                             <label className="form-label">Resume (PDF) *</label>
                             <input
                                 type="file"
                                 accept=".pdf"
                                 onChange={(e) => setFile(e.target.files[0])}
-                                className="form-input"
+                                className="form-input file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-coral file:text-white hover:file:bg-coral-dark"
                                 required
                             />
                         </div>
                     </div>
 
-                    <div className="modal-footer">
+                    <div className="flex justify-end gap-3 p-6 border-t border-sky/10">
                         <button type="button" className="btn btn-secondary" onClick={onClose}>
                             Cancel
                         </button>

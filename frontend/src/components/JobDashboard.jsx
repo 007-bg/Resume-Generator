@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Briefcase, Users, Calendar, Trash2 } from 'lucide-react';
+import { FiPlus, FiBriefcase, FiUsers, FiCalendar, FiTrash2 } from 'react-icons/fi';
 import { getJobs, createJob, deleteJob } from '../api/client';
 
 function JobDashboard() {
@@ -57,12 +57,12 @@ function JobDashboard() {
 
     if (isLoading) {
         return (
-            <div className="grid-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3].map((i) => (
                     <div key={i} className="card">
-                        <div className="skeleton" style={{ height: 24, width: '70%', marginBottom: 12 }} />
-                        <div className="skeleton" style={{ height: 16, width: '50%', marginBottom: 24 }} />
-                        <div className="skeleton" style={{ height: 60, width: '100%' }} />
+                        <div className="skeleton h-6 w-[70%] mb-3" />
+                        <div className="skeleton h-4 w-1/2 mb-6" />
+                        <div className="skeleton h-16 w-full" />
                     </div>
                 ))}
             </div>
@@ -71,9 +71,9 @@ function JobDashboard() {
 
     if (error) {
         return (
-            <div className="card text-center">
-                <p style={{ color: 'var(--error)' }}>{error}</p>
-                <button className="btn btn-primary mt-md" onClick={loadJobs}>
+            <div className="card text-center py-12">
+                <p className="text-coral">{error}</p>
+                <button className="btn btn-primary mt-4" onClick={loadJobs}>
                     Retry
                 </button>
             </div>
@@ -82,12 +82,10 @@ function JobDashboard() {
 
     return (
         <div>
-            <div className="flex items-center justify-between mb-lg">
+            <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 700 }}>
-                        Job Dashboard
-                    </h1>
-                    <p className="text-secondary mt-sm">
+                    <h1 className="text-2xl font-bold">Job Dashboard</h1>
+                    <p className="text-sky/70 mt-2">
                         Manage job postings and analyze candidate resumes
                     </p>
                 </div>
@@ -95,71 +93,63 @@ function JobDashboard() {
                     className="btn btn-primary"
                     onClick={() => setShowCreateModal(true)}
                 >
-                    <Plus size={18} />
+                    <FiPlus size={18} />
                     New Job Posting
                 </button>
             </div>
 
             {jobs.length === 0 ? (
-                <div className="card empty-state">
-                    <Briefcase size={64} className="empty-state-icon" />
-                    <h3 className="empty-state-title">No job postings yet</h3>
-                    <p className="text-muted mb-md">
+                <div className="card text-center py-12">
+                    <FiBriefcase size={64} className="mx-auto mb-4 text-sky/50" />
+                    <h3 className="text-lg font-semibold text-sky/70 mb-2">No job postings yet</h3>
+                    <p className="text-sky/50 mb-4">
                         Create your first job posting to start analyzing resumes
                     </p>
                     <button
                         className="btn btn-primary"
                         onClick={() => setShowCreateModal(true)}
                     >
-                        <Plus size={18} />
+                        <FiPlus size={18} />
                         Create Job Posting
                     </button>
                 </div>
             ) : (
-                <div className="grid-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {jobs.map((job) => (
                         <Link
                             key={job.id}
                             to={`/jobs/${job.id}`}
-                            style={{ textDecoration: 'none' }}
+                            className="no-underline"
                         >
-                            <div className="card" style={{ height: '100%' }}>
-                                <div className="card-header">
-                                    <h3 className="card-title">{job.title}</h3>
+                            <div className="card h-full hover:-translate-y-1 transition-transform">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="font-semibold">{job.title}</h3>
                                     <button
-                                        className="btn btn-ghost btn-icon"
+                                        className="btn btn-ghost p-2"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             handleDeleteJob(job.id);
                                         }}
                                     >
-                                        <Trash2 size={16} />
+                                        <FiTrash2 size={16} />
                                     </button>
                                 </div>
 
                                 {job.company && (
-                                    <p className="card-subtitle">{job.company}</p>
+                                    <p className="text-sky/70 text-sm">{job.company}</p>
                                 )}
 
-                                <p
-                                    className="text-secondary mt-md"
-                                    style={{
-                                        overflow: 'hidden',
-                                        display: '-webkit-box',
-                                        WebkitLineClamp: 3,
-                                        WebkitBoxOrient: 'vertical'
-                                    }}
-                                >
+                                <p className="text-sky/60 mt-4 text-sm line-clamp-3">
                                     {job.description}
                                 </p>
 
-                                <div className="flex items-center gap-md mt-lg text-muted" style={{ fontSize: 'var(--font-size-sm)' }}>
-                                    <span className="flex items-center gap-sm">
-                                        <Users size={14} />
+                                <div className="flex items-center gap-4 mt-6 text-sky/50 text-sm">
+                                    <span className="flex items-center gap-1">
+                                        <FiUsers size={14} />
                                         {job.candidate_count || 0} candidates
                                     </span>
-                                    <span className="flex items-center gap-sm">
-                                        <Calendar size={14} />
+                                    <span className="flex items-center gap-1">
+                                        <FiCalendar size={14} />
                                         {formatDate(job.created_at)}
                                     </span>
                                 </div>
@@ -200,18 +190,18 @@ function CreateJobModal({ onClose, onCreate }) {
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h2>Create Job Posting</h2>
-                    <button className="btn btn-ghost btn-icon" onClick={onClose}>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-6" onClick={onClose}>
+            <div className="bg-navy-dark border border-sky/20 rounded-lg max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-lg" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-6 border-b border-sky/10">
+                    <h2 className="text-xl font-bold">Create Job Posting</h2>
+                    <button className="btn btn-ghost p-2" onClick={onClose}>
                         ×
                     </button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="modal-body">
-                        <div className="form-group">
+                    <div className="p-6 space-y-4">
+                        <div>
                             <label className="form-label">Job Title *</label>
                             <input
                                 type="text"
@@ -223,7 +213,7 @@ function CreateJobModal({ onClose, onCreate }) {
                             />
                         </div>
 
-                        <div className="form-group">
+                        <div>
                             <label className="form-label">Company</label>
                             <input
                                 type="text"
@@ -234,7 +224,7 @@ function CreateJobModal({ onClose, onCreate }) {
                             />
                         </div>
 
-                        <div className="form-group">
+                        <div>
                             <label className="form-label">Job Description *</label>
                             <textarea
                                 className="form-textarea"
@@ -246,7 +236,7 @@ function CreateJobModal({ onClose, onCreate }) {
                             />
                         </div>
 
-                        <div className="form-group">
+                        <div>
                             <label className="form-label">Requirements</label>
                             <textarea
                                 className="form-textarea"
@@ -258,7 +248,7 @@ function CreateJobModal({ onClose, onCreate }) {
                         </div>
                     </div>
 
-                    <div className="modal-footer">
+                    <div className="flex justify-end gap-3 p-6 border-t border-sky/10">
                         <button type="button" className="btn btn-secondary" onClick={onClose}>
                             Cancel
                         </button>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Briefcase, GraduationCap, Code, Award, Save, ArrowRight, Plus, Trash2 } from 'lucide-react';
+import { FiUser, FiBriefcase, FiBook, FiCode, FiAward, FiSave, FiArrowRight, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUser } from '../store/slices/authSlice';
 import {
@@ -93,44 +93,44 @@ function ProfileSetup() {
     };
 
     const steps = [
-        { icon: User, label: 'Personal Info' },
-        { icon: Briefcase, label: 'Experience' },
-        { icon: GraduationCap, label: 'Education' },
-        { icon: Code, label: 'Skills' },
-        { icon: Award, label: 'Certifications' }
+        { icon: FiUser, label: 'Personal Info' },
+        { icon: FiBriefcase, label: 'Experience' },
+        { icon: FiBook, label: 'Education' },
+        { icon: FiCode, label: 'Skills' },
+        { icon: FiAward, label: 'Certifications' }
     ];
 
     if (loading) {
         return (
-            <div className="loading-screen">
-                <div className="spinner" style={{ width: 40, height: 40 }} />
+            <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 text-sky/50">
+                <div className="spinner w-10 h-10" />
                 <p>Loading profile...</p>
             </div>
         );
     }
 
     return (
-        <div style={{ maxWidth: 800, margin: '0 auto' }}>
-            <h1 style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 700, marginBottom: 'var(--space-sm)' }}>
-                Complete Your Profile
-            </h1>
-            <p className="text-secondary mb-lg">
+        <div className="max-w-3xl mx-auto">
+            <h1 className="text-2xl font-bold mb-2">Complete Your Profile</h1>
+            <p className="text-sky/70 mb-6">
                 This information will be used to generate your personalized resumes.
             </p>
 
             {/* Progress Steps */}
-            <div className="flex items-center gap-sm mb-xl" style={{ justifyContent: 'center' }}>
+            <div className="flex items-center justify-center gap-2 mb-8">
                 {steps.map((s, i) => (
                     <div key={i} className="flex items-center">
                         <button
-                            className={`btn ${step === i + 1 ? 'btn-primary' : 'btn-secondary'}`}
+                            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${step === i + 1
+                                    ? 'bg-coral text-white'
+                                    : 'bg-navy text-sky border border-sky/20 hover:border-coral'
+                                }`}
                             onClick={() => setStep(i + 1)}
-                            style={{ borderRadius: '50%', width: 40, height: 40, padding: 0 }}
                         >
                             <s.icon size={18} />
                         </button>
                         {i < steps.length - 1 && (
-                            <div style={{ width: 40, height: 2, background: 'var(--border-color)' }} />
+                            <div className="w-10 h-0.5 bg-sky/20" />
                         )}
                     </div>
                 ))}
@@ -140,9 +140,9 @@ function ProfileSetup() {
                 {/* Step 1: Personal Info */}
                 {step === 1 && (
                     <div>
-                        <h2 className="mb-lg">Personal Information</h2>
-                        <div className="grid-2">
-                            <div className="form-group">
+                        <h2 className="text-xl font-semibold mb-6">Personal Information</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
                                 <label className="form-label">Full Name *</label>
                                 <input
                                     type="text"
@@ -152,7 +152,7 @@ function ProfileSetup() {
                                     placeholder="John Doe"
                                 />
                             </div>
-                            <div className="form-group">
+                            <div>
                                 <label className="form-label">Email *</label>
                                 <input
                                     type="email"
@@ -162,8 +162,8 @@ function ProfileSetup() {
                                 />
                             </div>
                         </div>
-                        <div className="grid-2">
-                            <div className="form-group">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div>
                                 <label className="form-label">Phone</label>
                                 <input
                                     type="tel"
@@ -173,7 +173,7 @@ function ProfileSetup() {
                                     placeholder="+1-555-0123"
                                 />
                             </div>
-                            <div className="form-group">
+                            <div>
                                 <label className="form-label">Location</label>
                                 <input
                                     type="text"
@@ -184,8 +184,8 @@ function ProfileSetup() {
                                 />
                             </div>
                         </div>
-                        <div className="grid-2">
-                            <div className="form-group">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div>
                                 <label className="form-label">LinkedIn URL</label>
                                 <input
                                     type="url"
@@ -195,7 +195,7 @@ function ProfileSetup() {
                                     placeholder="linkedin.com/in/johndoe"
                                 />
                             </div>
-                            <div className="form-group">
+                            <div>
                                 <label className="form-label">GitHub URL</label>
                                 <input
                                     type="url"
@@ -206,7 +206,7 @@ function ProfileSetup() {
                                 />
                             </div>
                         </div>
-                        <div className="form-group">
+                        <div className="mt-4">
                             <label className="form-label">Professional Summary</label>
                             <textarea
                                 className="form-textarea"
@@ -222,23 +222,23 @@ function ProfileSetup() {
                 {/* Step 2: Experience */}
                 {step === 2 && (
                     <div>
-                        <div className="flex items-center justify-between mb-lg">
-                            <h2>Work Experience</h2>
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-semibold">Work Experience</h2>
                             <button className="btn btn-secondary" onClick={() => addItem('experience')}>
-                                <Plus size={16} /> Add Experience
+                                <FiPlus size={16} /> Add Experience
                             </button>
                         </div>
 
                         {(localData.experience || []).map((exp, i) => (
-                            <div key={i} className="card mb-md" style={{ background: 'var(--bg-tertiary)' }}>
-                                <div className="flex items-center justify-between mb-md">
-                                    <h4>Experience {i + 1}</h4>
-                                    <button className="btn btn-ghost btn-icon" onClick={() => removeItem('experience', i)}>
-                                        <Trash2 size={16} />
+                            <div key={i} className="bg-navy border border-sky/20 rounded-lg p-4 mb-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h4 className="font-medium">Experience {i + 1}</h4>
+                                    <button className="btn btn-ghost p-2" onClick={() => removeItem('experience', i)}>
+                                        <FiTrash2 size={16} />
                                     </button>
                                 </div>
-                                <div className="grid-2">
-                                    <div className="form-group">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
                                         <label className="form-label">Job Title</label>
                                         <input
                                             type="text"
@@ -247,7 +247,7 @@ function ProfileSetup() {
                                             onChange={e => updateItem('experience', i, 'title', e.target.value)}
                                         />
                                     </div>
-                                    <div className="form-group">
+                                    <div>
                                         <label className="form-label">Company</label>
                                         <input
                                             type="text"
@@ -257,8 +257,8 @@ function ProfileSetup() {
                                         />
                                     </div>
                                 </div>
-                                <div className="grid-2">
-                                    <div className="form-group">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                    <div>
                                         <label className="form-label">Start Date</label>
                                         <input
                                             type="month"
@@ -267,7 +267,7 @@ function ProfileSetup() {
                                             onChange={e => updateItem('experience', i, 'start_date', e.target.value)}
                                         />
                                     </div>
-                                    <div className="form-group">
+                                    <div>
                                         <label className="form-label">End Date (leave empty if current)</label>
                                         <input
                                             type="month"
@@ -277,7 +277,7 @@ function ProfileSetup() {
                                         />
                                     </div>
                                 </div>
-                                <div className="form-group">
+                                <div className="mt-4">
                                     <label className="form-label">Description & Achievements</label>
                                     <textarea
                                         className="form-textarea"
@@ -291,8 +291,8 @@ function ProfileSetup() {
                         ))}
 
                         {(localData.experience || []).length === 0 && (
-                            <div className="empty-state">
-                                <p className="text-muted">No experience added yet</p>
+                            <div className="text-center py-8 text-sky/50">
+                                <p>No experience added yet</p>
                             </div>
                         )}
                     </div>
@@ -301,23 +301,23 @@ function ProfileSetup() {
                 {/* Step 3: Education */}
                 {step === 3 && (
                     <div>
-                        <div className="flex items-center justify-between mb-lg">
-                            <h2>Education</h2>
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-semibold">Education</h2>
                             <button className="btn btn-secondary" onClick={() => addItem('education')}>
-                                <Plus size={16} /> Add Education
+                                <FiPlus size={16} /> Add Education
                             </button>
                         </div>
 
                         {(localData.education || []).map((edu, i) => (
-                            <div key={i} className="card mb-md" style={{ background: 'var(--bg-tertiary)' }}>
-                                <div className="flex items-center justify-between mb-md">
-                                    <h4>Education {i + 1}</h4>
-                                    <button className="btn btn-ghost btn-icon" onClick={() => removeItem('education', i)}>
-                                        <Trash2 size={16} />
+                            <div key={i} className="bg-navy border border-sky/20 rounded-lg p-4 mb-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h4 className="font-medium">Education {i + 1}</h4>
+                                    <button className="btn btn-ghost p-2" onClick={() => removeItem('education', i)}>
+                                        <FiTrash2 size={16} />
                                     </button>
                                 </div>
-                                <div className="grid-2">
-                                    <div className="form-group">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
                                         <label className="form-label">Degree</label>
                                         <input
                                             type="text"
@@ -327,7 +327,7 @@ function ProfileSetup() {
                                             placeholder="B.S. Computer Science"
                                         />
                                     </div>
-                                    <div className="form-group">
+                                    <div>
                                         <label className="form-label">Institution</label>
                                         <input
                                             type="text"
@@ -337,8 +337,8 @@ function ProfileSetup() {
                                         />
                                     </div>
                                 </div>
-                                <div className="grid-2">
-                                    <div className="form-group">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                    <div>
                                         <label className="form-label">Graduation Date</label>
                                         <input
                                             type="month"
@@ -347,7 +347,7 @@ function ProfileSetup() {
                                             onChange={e => updateItem('education', i, 'graduation_date', e.target.value)}
                                         />
                                     </div>
-                                    <div className="form-group">
+                                    <div>
                                         <label className="form-label">GPA (optional)</label>
                                         <input
                                             type="text"
@@ -366,36 +366,38 @@ function ProfileSetup() {
                 {/* Step 4: Skills */}
                 {step === 4 && (
                     <div>
-                        <h2 className="mb-lg">Skills</h2>
-                        <div className="form-group">
-                            <label className="form-label">Technical Skills</label>
-                            <input
-                                type="text"
-                                className="form-input"
-                                value={(localData.skills?.technical || []).join(', ')}
-                                onChange={e => updateField('skills', 'technical', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-                                placeholder="Python, JavaScript, React, AWS (comma-separated)"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Soft Skills</label>
-                            <input
-                                type="text"
-                                className="form-input"
-                                value={(localData.skills?.soft || []).join(', ')}
-                                onChange={e => updateField('skills', 'soft', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-                                placeholder="Leadership, Communication, Problem Solving"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Languages</label>
-                            <input
-                                type="text"
-                                className="form-input"
-                                value={(localData.skills?.languages || []).join(', ')}
-                                onChange={e => updateField('skills', 'languages', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-                                placeholder="English (Native), Spanish (Intermediate)"
-                            />
+                        <h2 className="text-xl font-semibold mb-6">Skills</h2>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="form-label">Technical Skills</label>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    value={(localData.skills?.technical || []).join(', ')}
+                                    onChange={e => updateField('skills', 'technical', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                                    placeholder="Python, JavaScript, React, AWS (comma-separated)"
+                                />
+                            </div>
+                            <div>
+                                <label className="form-label">Soft Skills</label>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    value={(localData.skills?.soft || []).join(', ')}
+                                    onChange={e => updateField('skills', 'soft', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                                    placeholder="Leadership, Communication, Problem Solving"
+                                />
+                            </div>
+                            <div>
+                                <label className="form-label">Languages</label>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    value={(localData.skills?.languages || []).join(', ')}
+                                    onChange={e => updateField('skills', 'languages', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                                    placeholder="English (Native), Spanish (Intermediate)"
+                                />
+                            </div>
                         </div>
                     </div>
                 )}
@@ -403,23 +405,23 @@ function ProfileSetup() {
                 {/* Step 5: Certifications */}
                 {step === 5 && (
                     <div>
-                        <div className="flex items-center justify-between mb-lg">
-                            <h2>Certifications (Optional)</h2>
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-semibold">Certifications (Optional)</h2>
                             <button className="btn btn-secondary" onClick={() => addItem('certifications')}>
-                                <Plus size={16} /> Add Certification
+                                <FiPlus size={16} /> Add Certification
                             </button>
                         </div>
 
                         {(localData.certifications || []).map((cert, i) => (
-                            <div key={i} className="card mb-md" style={{ background: 'var(--bg-tertiary)' }}>
-                                <div className="flex items-center justify-between mb-md">
-                                    <h4>Certification {i + 1}</h4>
-                                    <button className="btn btn-ghost btn-icon" onClick={() => removeItem('certifications', i)}>
-                                        <Trash2 size={16} />
+                            <div key={i} className="bg-navy border border-sky/20 rounded-lg p-4 mb-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h4 className="font-medium">Certification {i + 1}</h4>
+                                    <button className="btn btn-ghost p-2" onClick={() => removeItem('certifications', i)}>
+                                        <FiTrash2 size={16} />
                                     </button>
                                 </div>
-                                <div className="grid-2">
-                                    <div className="form-group">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
                                         <label className="form-label">Certification Name</label>
                                         <input
                                             type="text"
@@ -428,7 +430,7 @@ function ProfileSetup() {
                                             onChange={e => updateItem('certifications', i, 'name', e.target.value)}
                                         />
                                     </div>
-                                    <div className="form-group">
+                                    <div>
                                         <label className="form-label">Issuer</label>
                                         <input
                                             type="text"
@@ -444,12 +446,12 @@ function ProfileSetup() {
                 )}
 
                 {/* Navigation */}
-                <div className="flex items-center justify-between mt-xl">
+                <div className="flex items-center justify-between mt-8">
                     <button className="btn btn-secondary" onClick={() => setStep(step - 1)} disabled={step === 1}>
                         Back
                     </button>
                     <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
-                        {saving ? <span className="spinner" /> : step < 5 ? <>Save & Continue <ArrowRight size={18} /></> : <>Complete Setup <Save size={18} /></>}
+                        {saving ? <span className="spinner" /> : step < 5 ? <>Save & Continue <FiArrowRight size={18} /></> : <>Complete Setup <FiSave size={18} /></>}
                     </button>
                 </div>
             </div>

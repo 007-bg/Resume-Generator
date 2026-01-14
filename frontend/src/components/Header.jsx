@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FileText, Briefcase, User, LogOut, LayoutDashboard, ClipboardList } from 'lucide-react';
+import { FiFileText, FiBriefcase, FiUser, FiLogOut, FiLayout, FiClipboard } from 'react-icons/fi';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectIsAuthenticated, selectUser, logout } from '../store/slices/authSlice';
 
@@ -15,64 +15,59 @@ function Header() {
         navigate('/login');
     };
 
+    const navLinkClass = (path, exact = true) => {
+        const isActive = exact ? location.pathname === path : location.pathname.startsWith(path);
+        return `flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded transition-all duration-150 ${isActive
+            ? 'text-white bg-navy'
+            : 'text-sky hover:text-white hover:bg-navy/50'
+            }`;
+    };
+
     return (
-        <header className="header">
-            <div className="header-content">
-                <Link to="/" className="logo">
-                    <div className="logo-icon">
-                        <FileText size={18} color="white" />
+        <header className="bg-navy-dark border-b border-sky/20 px-6 py-4 sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
+                <Link to="/" className="flex items-center gap-2 text-xl font-bold text-coral">
+                    <div className="w-8 h-8 bg-coral rounded flex items-center justify-center">
+                        <FiFileText size={18} color="white" />
                     </div>
                     Resume Agent
                 </Link>
 
-                <nav className="nav-links">
+                <nav className="flex items-center gap-2">
                     {isAuthenticated ? (
                         <>
-                            <Link
-                                to="/dashboard"
-                                className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}
-                            >
-                                <LayoutDashboard size={16} style={{ marginRight: 6 }} />
+                            <Link to="/dashboard" className={navLinkClass('/dashboard')}>
+                                <FiLayout size={16} />
                                 Resumes
                             </Link>
-                            <Link
-                                to="/applications"
-                                className={`nav-link ${location.pathname === '/applications' ? 'active' : ''}`}
-                            >
-                                <ClipboardList size={16} style={{ marginRight: 6 }} />
+                            <Link to="/applications" className={navLinkClass('/applications')}>
+                                <FiClipboard size={16} />
                                 Applications
                             </Link>
-                            <Link
-                                to="/jobs"
-                                className={`nav-link ${location.pathname.startsWith('/jobs') ? 'active' : ''}`}
-                            >
-                                <Briefcase size={16} style={{ marginRight: 6 }} />
+                            <Link to="/jobs" className={navLinkClass('/jobs', false)}>
+                                <FiBriefcase size={16} />
                                 Jobs
                             </Link>
-                            <Link
-                                to="/profile/setup"
-                                className={`nav-link ${location.pathname.startsWith('/profile') ? 'active' : ''}`}
-                            >
-                                <User size={16} style={{ marginRight: 6 }} />
+                            <Link to="/profile/setup" className={navLinkClass('/profile', false)}>
+                                <FiUser size={16} />
                                 Profile
                             </Link>
-                            <button className="nav-link" onClick={handleLogout} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-                                <LogOut size={16} style={{ marginRight: 6 }} />
+                            <button
+                                className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-sky hover:text-white hover:bg-navy/50 rounded transition-all duration-150 border-none bg-transparent cursor-pointer"
+                                onClick={handleLogout}
+                            >
+                                <FiLogOut size={16} />
                                 Logout
                             </button>
                         </>
                     ) : (
                         <>
-                            <Link
-                                to="/login"
-                                className={`nav-link ${location.pathname === '/login' ? 'active' : ''}`}
-                            >
+                            <Link to="/login" className={navLinkClass('/login')}>
                                 Sign In
                             </Link>
                             <Link
                                 to="/register"
-                                className="btn btn-primary"
-                                style={{ padding: '6px 16px' }}
+                                className="btn btn-primary px-4 py-1.5"
                             >
                                 Get Started
                             </Link>

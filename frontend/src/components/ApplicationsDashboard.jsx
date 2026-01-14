@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-    Plus, Briefcase, Star, StarOff, ExternalLink, Trash2,
-    Calendar, Clock, Building2, MapPin, Filter
-} from 'lucide-react';
+    FiPlus, FiBriefcase, FiStar, FiExternalLink, FiTrash2,
+    FiCalendar, FiClock, FiHome, FiMapPin, FiFilter
+} from 'react-icons/fi';
 import { useSelector, useDispatch } from 'react-redux';
 import {
     fetchApplications,
@@ -21,19 +21,18 @@ import {
     selectStatusFilter,
     selectViewMode,
 } from '../store/slices/applicationsSlice';
-import { useState } from 'react';
 
 const STATUS_CONFIG = {
-    SAVED: { label: 'Saved', color: '#6b7280', bg: '#374151' },
-    APPLIED: { label: 'Applied', color: '#3b82f6', bg: '#1e3a5f' },
-    SCREENING: { label: 'Screening', color: '#8b5cf6', bg: '#4c1d95' },
-    INTERVIEWING: { label: 'Interviewing', color: '#f59e0b', bg: '#78350f' },
-    TECHNICAL: { label: 'Technical', color: '#ec4899', bg: '#831843' },
-    FINAL: { label: 'Final Round', color: '#14b8a6', bg: '#134e4a' },
+    SAVED: { label: 'Saved', color: '#A8D0E6', bg: '#374785' },
+    APPLIED: { label: 'Applied', color: '#F8E9A1', bg: '#24305E' },
+    SCREENING: { label: 'Screening', color: '#A8D0E6', bg: '#374785' },
+    INTERVIEWING: { label: 'Interviewing', color: '#F8E9A1', bg: '#24305E' },
+    TECHNICAL: { label: 'Technical', color: '#F76C6C', bg: '#374785' },
+    FINAL: { label: 'Final Round', color: '#A8D0E6', bg: '#24305E' },
     OFFER: { label: 'Offer', color: '#22c55e', bg: '#14532d' },
     ACCEPTED: { label: 'Accepted', color: '#10b981', bg: '#064e3b' },
-    REJECTED: { label: 'Rejected', color: '#ef4444', bg: '#7f1d1d' },
-    WITHDRAWN: { label: 'Withdrawn', color: '#6b7280', bg: '#1f2937' }
+    REJECTED: { label: 'Rejected', color: '#F76C6C', bg: '#24305E' },
+    WITHDRAWN: { label: 'Withdrawn', color: '#A8D0E6', bg: '#374785' }
 };
 
 const STATUS_ORDER = ['SAVED', 'APPLIED', 'SCREENING', 'INTERVIEWING', 'TECHNICAL', 'FINAL', 'OFFER'];
@@ -80,50 +79,45 @@ function ApplicationsDashboard() {
 
     return (
         <div>
-            <div className="flex items-center justify-between mb-lg">
+            <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 700 }}>
-                        Job Applications
-                    </h1>
-                    <p className="text-secondary mt-sm">
-                        Track your job applications and their progress
-                    </p>
+                    <h1 className="text-2xl font-bold">Job Applications</h1>
+                    <p className="text-sky/70 mt-2">Track your job applications and their progress</p>
                 </div>
                 <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
-                    <Plus size={18} />
+                    <FiPlus size={18} />
                     Add Application
                 </button>
             </div>
 
             {/* Stats Cards */}
             {stats && (
-                <div className="grid-4 mb-lg">
-                    <div className="card stat-card">
-                        <div className="stat-value">{stats.total}</div>
-                        <div className="stat-label">Total Applications</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div className="card text-center p-6">
+                        <div className="text-3xl font-bold mb-1">{stats.total}</div>
+                        <div className="text-sky/60 text-sm">Total Applications</div>
                     </div>
-                    <div className="card stat-card">
-                        <div className="stat-value" style={{ color: 'var(--primary)' }}>{stats.active}</div>
-                        <div className="stat-label">Active</div>
+                    <div className="card text-center p-6">
+                        <div className="text-3xl font-bold mb-1 text-sky">{stats.active}</div>
+                        <div className="text-sky/60 text-sm">Active</div>
                     </div>
-                    <div className="card stat-card">
-                        <div className="stat-value" style={{ color: 'var(--success)' }}>{stats.by_status?.OFFER || 0}</div>
-                        <div className="stat-label">Offers</div>
+                    <div className="card text-center p-6">
+                        <div className="text-3xl font-bold mb-1 text-emerald-500">{stats.by_status?.OFFER || 0}</div>
+                        <div className="text-sky/60 text-sm">Offers</div>
                     </div>
-                    <div className="card stat-card">
-                        <div className="stat-value" style={{ color: 'var(--warning)' }}>{stats.by_status?.INTERVIEWING || 0}</div>
-                        <div className="stat-label">Interviewing</div>
+                    <div className="card text-center p-6">
+                        <div className="text-3xl font-bold mb-1 text-cream">{stats.by_status?.INTERVIEWING || 0}</div>
+                        <div className="text-sky/60 text-sm">Interviewing</div>
                     </div>
                 </div>
             )}
 
             {/* Filters */}
-            <div className="flex items-center gap-md mb-lg">
-                <div className="flex items-center gap-sm">
-                    <Filter size={16} className="text-muted" />
+            <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-center gap-2">
+                    <FiFilter size={16} className="text-sky/50" />
                     <select
-                        className="form-input"
-                        style={{ width: 'auto' }}
+                        className="form-input w-auto"
                         value={statusFilter}
                         onChange={e => dispatch(setStatusFilter(e.target.value))}
                     >
@@ -133,15 +127,15 @@ function ApplicationsDashboard() {
                         ))}
                     </select>
                 </div>
-                <div className="flex items-center gap-sm">
+                <div className="flex items-center gap-2">
                     <button
-                        className={`btn btn-sm ${viewMode === 'list' ? 'btn-primary' : 'btn-secondary'}`}
+                        className={`btn px-3 py-1.5 text-xs ${viewMode === 'list' ? 'btn-primary' : 'btn-secondary'}`}
                         onClick={() => dispatch(setViewMode('list'))}
                     >
                         List
                     </button>
                     <button
-                        className={`btn btn-sm ${viewMode === 'kanban' ? 'btn-primary' : 'btn-secondary'}`}
+                        className={`btn px-3 py-1.5 text-xs ${viewMode === 'kanban' ? 'btn-primary' : 'btn-secondary'}`}
                         onClick={() => dispatch(setViewMode('kanban'))}
                     >
                         Kanban
@@ -152,23 +146,23 @@ function ApplicationsDashboard() {
             {/* Applications List */}
             {isLoading ? (
                 <div className="card">
-                    <div className="skeleton" style={{ height: 60, marginBottom: 12 }} />
-                    <div className="skeleton" style={{ height: 60, marginBottom: 12 }} />
-                    <div className="skeleton" style={{ height: 60 }} />
+                    <div className="skeleton h-16 mb-3" />
+                    <div className="skeleton h-16 mb-3" />
+                    <div className="skeleton h-16" />
                 </div>
             ) : viewMode === 'list' ? (
-                <div className="card">
+                <div className="card p-0">
                     {applications.length === 0 ? (
-                        <div className="empty-state">
-                            <Briefcase size={48} className="empty-state-icon" />
-                            <h3>No applications yet</h3>
-                            <p className="text-muted mb-md">Start tracking your job applications</p>
+                        <div className="text-center py-12 text-sky/50">
+                            <FiBriefcase size={48} className="mx-auto mb-4 opacity-50" />
+                            <h3 className="text-lg font-semibold text-sky/70 mb-2">No applications yet</h3>
+                            <p className="text-sky/50 mb-4">Start tracking your job applications</p>
                             <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
-                                <Plus size={18} /> Add Application
+                                <FiPlus size={18} /> Add Application
                             </button>
                         </div>
                     ) : (
-                        <div className="applications-list">
+                        <div className="divide-y divide-sky/10">
                             {applications.map(app => (
                                 <ApplicationRow
                                     key={app.id}
@@ -204,38 +198,45 @@ function ApplicationRow({ app, onStatusUpdate, onToggleFavorite, onDelete, onEdi
     const statusConfig = STATUS_CONFIG[app.status] || STATUS_CONFIG.SAVED;
 
     return (
-        <div className="application-row">
-            <button className="favorite-btn" onClick={() => onToggleFavorite(app.id)}>
-                {app.is_favorite ? <Star size={18} fill="var(--warning)" color="var(--warning)" /> : <StarOff size={18} />}
+        <div className="flex items-center gap-4 p-4 hover:bg-sky/5 transition-colors">
+            <button
+                className="p-1 text-sky/50 hover:text-cream transition-colors bg-transparent border-none cursor-pointer"
+                onClick={() => onToggleFavorite(app.id)}
+            >
+                <FiStar size={18} fill={app.is_favorite ? "#F8E9A1" : "none"} color={app.is_favorite ? "#F8E9A1" : "currentColor"} />
             </button>
 
-            <div className="application-info" onClick={onEdit} style={{ cursor: 'pointer' }}>
-                <div className="application-title">
-                    <h4>{app.job_title}</h4>
+            <div className="flex-1 min-w-0 cursor-pointer" onClick={onEdit}>
+                <div className="flex items-center gap-2">
+                    <h4 className="font-semibold">{app.job_title}</h4>
                     {app.job_url && (
-                        <a href={app.job_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
-                            <ExternalLink size={14} />
+                        <a
+                            href={app.job_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={e => e.stopPropagation()}
+                            className="text-sky/50 hover:text-coral"
+                        >
+                            <FiExternalLink size={14} />
                         </a>
                     )}
                 </div>
-                <div className="application-meta">
-                    <span><Building2 size={14} /> {app.company}</span>
-                    {app.location && <span><MapPin size={14} /> {app.location}</span>}
-                    {app.applied_date && <span><Calendar size={14} /> Applied {app.applied_date}</span>}
+                <div className="flex flex-wrap gap-4 mt-1 text-sm text-sky/60">
+                    <span className="flex items-center gap-1"><FiHome size={14} /> {app.company}</span>
+                    {app.location && <span className="flex items-center gap-1"><FiMapPin size={14} /> {app.location}</span>}
+                    {app.applied_date && <span className="flex items-center gap-1"><FiCalendar size={14} /> Applied {app.applied_date}</span>}
                     {app.days_since_applied !== null && (
-                        <span><Clock size={14} /> {app.days_since_applied} days ago</span>
+                        <span className="flex items-center gap-1"><FiClock size={14} /> {app.days_since_applied} days ago</span>
                     )}
                 </div>
                 {app.resume_title && (
-                    <div className="text-muted" style={{ fontSize: 'var(--font-size-xs)' }}>
-                        Resume: {app.resume_title}
-                    </div>
+                    <div className="text-sky/50 text-xs mt-1">Resume: {app.resume_title}</div>
                 )}
             </div>
 
-            <div className="application-status">
+            <div className="flex-shrink-0">
                 <select
-                    className="status-select"
+                    className="px-3 py-1.5 text-xs font-medium rounded-sm cursor-pointer border"
                     value={app.status}
                     onChange={e => onStatusUpdate(app.id, e.target.value)}
                     style={{ background: statusConfig.bg, color: statusConfig.color, borderColor: statusConfig.color }}
@@ -246,8 +247,8 @@ function ApplicationRow({ app, onStatusUpdate, onToggleFavorite, onDelete, onEdi
                 </select>
             </div>
 
-            <button className="btn btn-ghost btn-icon" onClick={() => onDelete(app.id)}>
-                <Trash2 size={16} />
+            <button className="btn btn-ghost p-2" onClick={() => onDelete(app.id)}>
+                <FiTrash2 size={16} />
             </button>
         </div>
     );
@@ -257,26 +258,30 @@ function KanbanView({ applications, onStatusUpdate }) {
     const allApps = useSelector(state => state.applications.items);
 
     return (
-        <div className="kanban-board">
+        <div className="flex gap-4 overflow-x-auto pb-4">
             {STATUS_ORDER.map(status => {
                 const config = STATUS_CONFIG[status];
                 const apps = allApps.filter(a => a.status === status);
 
                 return (
-                    <div key={status} className="kanban-column">
-                        <div className="kanban-header" style={{ borderColor: config.color }}>
+                    <div key={status} className="flex-shrink-0 w-72 bg-dark-card border border-sky/20 rounded flex flex-col max-h-[70vh]">
+                        <div
+                            className="p-4 border-b-2 flex items-center justify-between font-semibold"
+                            style={{ borderColor: config.color }}
+                        >
                             <span>{config.label}</span>
-                            <span className="kanban-count">{apps.length}</span>
+                            <span className="bg-navy px-2 py-0.5 rounded-full text-xs">{apps.length}</span>
                         </div>
-                        <div className="kanban-cards">
+                        <div className="flex-1 overflow-y-auto p-2 space-y-2">
                             {apps.map(app => (
-                                <div key={app.id} className="kanban-card">
-                                    <h4>{app.job_title}</h4>
-                                    <p className="text-muted">{app.company}</p>
+                                <div
+                                    key={app.id}
+                                    className="bg-navy border border-sky/20 rounded-sm p-3 cursor-pointer hover:border-coral hover:-translate-y-0.5 transition-all"
+                                >
+                                    <h4 className="text-sm font-medium mb-1">{app.job_title}</h4>
+                                    <p className="text-sky/60 text-xs">{app.company}</p>
                                     {app.applied_date && (
-                                        <p className="text-muted" style={{ fontSize: 'var(--font-size-xs)' }}>
-                                            {app.applied_date}
-                                        </p>
+                                        <p className="text-sky/50 text-xs mt-1">{app.applied_date}</p>
                                     )}
                                 </div>
                             ))}
@@ -311,17 +316,17 @@ function ApplicationModal({ application, onClose, onSave }) {
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content modal-lg" onClick={e => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h2>{isEditing ? 'Edit Application' : 'Add Application'}</h2>
-                    <button className="btn btn-ghost btn-icon" onClick={onClose}>×</button>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-6" onClick={onClose}>
+            <div className="bg-navy-dark border border-sky/20 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-lg" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-6 border-b border-sky/10">
+                    <h2 className="text-xl font-bold">{isEditing ? 'Edit Application' : 'Add Application'}</h2>
+                    <button className="btn btn-ghost p-2" onClick={onClose}>×</button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="modal-body">
-                        <div className="grid-2">
-                            <div className="form-group">
+                    <div className="p-6 space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
                                 <label className="form-label">Job Title *</label>
                                 <input
                                     type="text"
@@ -331,7 +336,7 @@ function ApplicationModal({ application, onClose, onSave }) {
                                     required
                                 />
                             </div>
-                            <div className="form-group">
+                            <div>
                                 <label className="form-label">Company *</label>
                                 <input
                                     type="text"
@@ -343,8 +348,8 @@ function ApplicationModal({ application, onClose, onSave }) {
                             </div>
                         </div>
 
-                        <div className="grid-2">
-                            <div className="form-group">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
                                 <label className="form-label">Job URL</label>
                                 <input
                                     type="url"
@@ -353,7 +358,7 @@ function ApplicationModal({ application, onClose, onSave }) {
                                     onChange={e => setFormData({ ...formData, job_url: e.target.value })}
                                 />
                             </div>
-                            <div className="form-group">
+                            <div>
                                 <label className="form-label">Location</label>
                                 <input
                                     type="text"
@@ -364,8 +369,8 @@ function ApplicationModal({ application, onClose, onSave }) {
                             </div>
                         </div>
 
-                        <div className="grid-3">
-                            <div className="form-group">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
                                 <label className="form-label">Status</label>
                                 <select
                                     className="form-input"
@@ -377,7 +382,7 @@ function ApplicationModal({ application, onClose, onSave }) {
                                     ))}
                                 </select>
                             </div>
-                            <div className="form-group">
+                            <div>
                                 <label className="form-label">Applied Date</label>
                                 <input
                                     type="date"
@@ -386,7 +391,7 @@ function ApplicationModal({ application, onClose, onSave }) {
                                     onChange={e => setFormData({ ...formData, applied_date: e.target.value })}
                                 />
                             </div>
-                            <div className="form-group">
+                            <div>
                                 <label className="form-label">Salary Range</label>
                                 <input
                                     type="text"
@@ -398,7 +403,7 @@ function ApplicationModal({ application, onClose, onSave }) {
                             </div>
                         </div>
 
-                        <div className="form-group">
+                        <div>
                             <label className="form-label">Notes</label>
                             <textarea
                                 className="form-textarea"
@@ -409,7 +414,7 @@ function ApplicationModal({ application, onClose, onSave }) {
                         </div>
                     </div>
 
-                    <div className="modal-footer">
+                    <div className="flex justify-end gap-3 p-6 border-t border-sky/10">
                         <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
                         <button type="submit" className="btn btn-primary" disabled={saving}>
                             {saving ? <span className="spinner" /> : (isEditing ? 'Save Changes' : 'Add Application')}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, FileText, Download, Eye, Zap, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { FiPlus, FiFileText, FiDownload, FiEye, FiZap, FiClock, FiCheckCircle, FiXCircle } from 'react-icons/fi';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUser } from '../store/slices/authSlice';
 import { fetchResumes, generateResume, checkResumeStatus, selectResumes, selectResumesLoading, selectGenerating, selectResumesError, clearError } from '../store/slices/resumesSlice';
@@ -62,10 +62,10 @@ function ResumeDashboard() {
 
     const getStatusIcon = (status) => {
         switch (status) {
-            case 'COMPLETED': return <CheckCircle size={16} style={{ color: 'var(--success)' }} />;
-            case 'PROCESSING': return <Clock size={16} style={{ color: 'var(--warning)' }} />;
-            case 'FAILED': return <XCircle size={16} style={{ color: 'var(--error)' }} />;
-            default: return <Clock size={16} style={{ color: 'var(--text-muted)' }} />;
+            case 'COMPLETED': return <FiCheckCircle size={16} className="text-emerald-500" />;
+            case 'PROCESSING': return <FiClock size={16} className="text-cream" />;
+            case 'FAILED': return <FiXCircle size={16} className="text-coral" />;
+            default: return <FiClock size={16} className="text-sky/50" />;
         }
     };
 
@@ -79,19 +79,17 @@ function ResumeDashboard() {
 
     return (
         <div>
-            <div className="flex items-center justify-between mb-lg">
+            <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 700 }}>
-                        Resume Dashboard
-                    </h1>
-                    <p className="text-secondary mt-sm">
+                    <h1 className="text-2xl font-bold">Resume Dashboard</h1>
+                    <p className="text-sky/70 mt-2">
                         Generate AI-powered resumes tailored to your target jobs
                     </p>
                 </div>
 
                 {isProfileComplete ? (
                     <button className="btn btn-primary" onClick={() => setShowGenerateModal(true)} disabled={!!generating}>
-                        {generating ? <span className="spinner" /> : <Zap size={18} />}
+                        {generating ? <span className="spinner" /> : <FiZap size={18} />}
                         {generating ? 'Generating...' : 'Generate Resume'}
                     </button>
                 ) : (
@@ -102,54 +100,54 @@ function ResumeDashboard() {
             </div>
 
             {!isProfileComplete && (
-                <div className="card mb-lg" style={{ borderColor: 'var(--warning)', background: 'var(--warning-bg)' }}>
-                    <p style={{ color: 'var(--warning)' }}>
+                <div className="card mb-6 border-cream/50 bg-cream/10">
+                    <p className="text-cream">
                         <strong>Profile Incomplete:</strong> Complete your profile to generate AI-powered resumes.
                     </p>
-                    <Link to="/profile/setup" className="btn btn-primary mt-md">
+                    <Link to="/profile/setup" className="btn btn-primary mt-4">
                         Complete Profile ({completionPercentage || 0}%)
                     </Link>
                 </div>
             )}
 
             {error && (
-                <div className="card mb-md" style={{ borderColor: 'var(--error)', background: 'var(--error-bg)' }}>
-                    <p style={{ color: 'var(--error)' }}>{error}</p>
+                <div className="card mb-4 border-coral/50 bg-coral/10">
+                    <p className="text-coral">{error}</p>
                 </div>
             )}
 
             {isLoading ? (
-                <div className="grid-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3].map(i => (
                         <div key={i} className="card">
-                            <div className="skeleton" style={{ height: 24, width: '60%', marginBottom: 12 }} />
-                            <div className="skeleton" style={{ height: 16, width: '40%', marginBottom: 24 }} />
-                            <div className="skeleton" style={{ height: 80 }} />
+                            <div className="skeleton h-6 w-3/5 mb-3" />
+                            <div className="skeleton h-4 w-2/5 mb-6" />
+                            <div className="skeleton h-20" />
                         </div>
                     ))}
                 </div>
             ) : resumes.length === 0 ? (
-                <div className="card empty-state">
-                    <FileText size={64} className="empty-state-icon" />
-                    <h3 className="empty-state-title">No resumes yet</h3>
-                    <p className="text-muted mb-md">
+                <div className="card text-center py-12">
+                    <FiFileText size={64} className="mx-auto mb-4 text-sky/50" />
+                    <h3 className="text-lg font-semibold text-sky/70 mb-2">No resumes yet</h3>
+                    <p className="text-sky/50 mb-4">
                         Generate your first AI-powered resume
                     </p>
                     {isProfileComplete && (
                         <button className="btn btn-primary" onClick={() => setShowGenerateModal(true)}>
-                            <Zap size={18} />
+                            <FiZap size={18} />
                             Generate Resume
                         </button>
                     )}
                 </div>
             ) : (
-                <div className="grid-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {resumes.map(resume => (
                         <div key={resume.id} className="card">
-                            <div className="card-header">
-                                <div className="flex items-center gap-sm">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-2">
                                     {getStatusIcon(resume.status)}
-                                    <h3 className="card-title">{resume.title}</h3>
+                                    <h3 className="font-semibold">{resume.title}</h3>
                                 </div>
                                 {resume.match_score && (
                                     <div className={`score-badge ${getScoreClass(resume.match_score)}`}>
@@ -158,25 +156,25 @@ function ResumeDashboard() {
                                 )}
                             </div>
 
-                            <p className="text-muted" style={{ fontSize: 'var(--font-size-sm)' }}>
+                            <p className="text-sky/60 text-sm">
                                 Created {new Date(resume.created_at).toLocaleDateString()}
                             </p>
 
                             {resume.status === 'COMPLETED' && (
-                                <div className="flex items-center gap-sm mt-lg">
+                                <div className="flex items-center gap-2 mt-6">
                                     <button className="btn btn-primary" onClick={() => handleDownloadPDF(resume)}>
-                                        <Download size={16} />
+                                        <FiDownload size={16} />
                                         Download PDF
                                     </button>
                                     <button className="btn btn-secondary">
-                                        <Eye size={16} />
+                                        <FiEye size={16} />
                                         Preview
                                     </button>
                                 </div>
                             )}
 
                             {resume.status === 'PROCESSING' && (
-                                <div className="flex items-center gap-sm mt-lg text-warning">
+                                <div className="flex items-center gap-2 mt-6 text-cream">
                                     <div className="spinner" />
                                     Generating...
                                 </div>
@@ -207,16 +205,16 @@ function GenerateModal({ onClose, onGenerate, isGenerating }) {
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={e => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h2>Generate New Resume</h2>
-                    <button className="btn btn-ghost btn-icon" onClick={onClose}>×</button>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-6" onClick={onClose}>
+            <div className="bg-navy-dark border border-sky/20 rounded-lg max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-lg" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-6 border-b border-sky/10">
+                    <h2 className="text-xl font-bold">Generate New Resume</h2>
+                    <button className="btn btn-ghost p-2" onClick={onClose}>×</button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="modal-body">
-                        <div className="form-group">
+                    <div className="p-6 space-y-4">
+                        <div>
                             <label className="form-label">Resume Title</label>
                             <input
                                 type="text"
@@ -227,7 +225,7 @@ function GenerateModal({ onClose, onGenerate, isGenerating }) {
                             />
                         </div>
 
-                        <div className="form-group">
+                        <div>
                             <label className="form-label">Target Job Description (Optional)</label>
                             <textarea
                                 className="form-textarea"
@@ -236,16 +234,16 @@ function GenerateModal({ onClose, onGenerate, isGenerating }) {
                                 placeholder="Paste the job description to tailor your resume..."
                                 rows={6}
                             />
-                            <p className="text-muted mt-sm" style={{ fontSize: 'var(--font-size-xs)' }}>
+                            <p className="text-sky/50 mt-2 text-xs">
                                 Adding a job description helps our AI optimize your resume for that specific role.
                             </p>
                         </div>
                     </div>
 
-                    <div className="modal-footer">
+                    <div className="flex justify-end gap-3 p-6 border-t border-sky/10">
                         <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
                         <button type="submit" className="btn btn-primary" disabled={isGenerating}>
-                            {isGenerating ? <><span className="spinner" /> Generating...</> : <><Zap size={18} /> Generate Resume</>}
+                            {isGenerating ? <><span className="spinner" /> Generating...</> : <><FiZap size={18} /> Generate Resume</>}
                         </button>
                     </div>
                 </form>

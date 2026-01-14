@@ -6,9 +6,18 @@ from rest_framework import generics, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
+from django.shortcuts import redirect
+from django.conf import settings
+
+# OAuth imports
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import SocialLoginView
 
 from .models import UserProfile
 from .serializers import (
@@ -17,6 +26,54 @@ from .serializers import (
     RegisterSerializer,
     GroundTruthSerializer
 )
+
+
+class GoogleLogin(SocialLoginView):
+    """
+    Google OAuth2 login endpoint.
+    POST /api/auth/social/google/
+    Send: { "code": "..." } or { "access_token": "..." }
+    Returns: JWT tokens
+    """
+    adapter_class = GoogleOAuth2Adapter
+    callback_url = "http://localhost:5173/oauth/callback"
+    client_class = OAuth2Client
+
+
+class GitHubLogin(SocialLoginView):
+    """
+    GitHub OAuth login endpoint.
+    POST /api/auth/social/github/
+    Send: { "code": "..." } or { "access_token": "..." }
+    Returns: JWT tokens
+    """
+    adapter_class = GitHubOAuth2Adapter
+    callback_url = "http://localhost:5173/oauth/callback"
+    client_class = OAuth2Client
+
+
+class OAuthCallbackView(APIView):
+    """
+    View to handle OAuth callback and generate JWT tokens.
+    This is called after django-allauth completes the OAuth flow.
+    """
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        user = request.user
+        
+        if user.is_authenticated:
+            # Generate JWT tokens
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            refresh_token = str(refresh)
+            
+            # Redirect to frontend with tokens
+            frontend_url = "http://localhost:5173/oauth/callback"
+            return redirect(f"{frontend_url}?access={access_token}&refresh={refresh_token}")
+        
+        # If not authenticated, redirect to login
+        return redirect("/login")
 
 
 class RegisterView(generics.CreateAPIView):

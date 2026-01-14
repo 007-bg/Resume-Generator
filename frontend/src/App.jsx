@@ -2,9 +2,11 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import Header from './components/Header';
+import LandingPage from './components/LandingPage';
 import JobDashboard from './components/JobDashboard';
 import JobDetail from './components/JobDetail';
 import { LoginForm, RegisterForm } from './components/auth/AuthForms';
+import OAuthCallback from './components/auth/OAuthCallback';
 import ResumeDashboard from './components/ResumeDashboard';
 import ProfileSetup from './components/ProfileSetup';
 import ApplicationsDashboard from './components/ApplicationsDashboard';
@@ -17,8 +19,8 @@ function ProtectedRoute({ children }) {
 
     if (loading) {
         return (
-            <div className="loading-screen">
-                <div className="spinner" style={{ width: 40, height: 40 }} />
+            <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 text-gray-500">
+                <div className="spinner w-10 h-10" />
                 <p>Loading...</p>
             </div>
         );
@@ -38,8 +40,8 @@ function PublicRoute({ children }) {
 
     if (loading) {
         return (
-            <div className="loading-screen">
-                <div className="spinner" style={{ width: 40, height: 40 }} />
+            <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 text-gray-500">
+                <div className="spinner w-10 h-10" />
             </div>
         );
     }
@@ -55,8 +57,10 @@ function AppRoutes() {
     return (
         <Routes>
             {/* Public routes */}
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<PublicRoute><LoginForm /></PublicRoute>} />
             <Route path="/register" element={<PublicRoute><RegisterForm /></PublicRoute>} />
+            <Route path="/oauth/callback" element={<OAuthCallback />} />
 
             {/* Protected routes */}
             <Route path="/dashboard" element={<ProtectedRoute><ResumeDashboard /></ProtectedRoute>} />
@@ -65,8 +69,8 @@ function AppRoutes() {
             <Route path="/jobs" element={<ProtectedRoute><JobDashboard /></ProtectedRoute>} />
             <Route path="/jobs/:jobId" element={<ProtectedRoute><JobDetail /></ProtectedRoute>} />
 
-            {/* Default redirect */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            {/* Default redirect for unknown routes */}
+            <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );
 }
@@ -83,9 +87,9 @@ function App() {
     }, []);
 
     return (
-        <div className="app-container">
+        <div className="min-h-screen flex flex-col">
             <Header />
-            <main className="main-content">
+            <main className="flex-1 w-full">
                 <AppRoutes />
             </main>
         </div>

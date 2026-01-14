@@ -1,14 +1,17 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FileText, Briefcase, User, LogOut, LayoutDashboard } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { FileText, Briefcase, User, LogOut, LayoutDashboard, ClipboardList } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectIsAuthenticated, selectUser, logout } from '../store/slices/authSlice';
 
 function Header() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { isAuthenticated, user, logout } = useAuth();
+    const dispatch = useDispatch();
+    const isAuthenticated = useSelector(selectIsAuthenticated);
+    const user = useSelector(selectUser);
 
     const handleLogout = () => {
-        logout();
+        dispatch(logout());
         navigate('/login');
     };
 
@@ -19,7 +22,7 @@ function Header() {
                     <div className="logo-icon">
                         <FileText size={18} color="white" />
                     </div>
-                    Resume Critique Agent
+                    Resume Agent
                 </Link>
 
                 <nav className="nav-links">
@@ -30,7 +33,14 @@ function Header() {
                                 className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}
                             >
                                 <LayoutDashboard size={16} style={{ marginRight: 6 }} />
-                                Dashboard
+                                Resumes
+                            </Link>
+                            <Link
+                                to="/applications"
+                                className={`nav-link ${location.pathname === '/applications' ? 'active' : ''}`}
+                            >
+                                <ClipboardList size={16} style={{ marginRight: 6 }} />
+                                Applications
                             </Link>
                             <Link
                                 to="/jobs"

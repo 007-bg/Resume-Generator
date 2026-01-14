@@ -1,28 +1,24 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, User, ArrowRight, Github } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { login, register, selectAuthLoading, selectAuthError, clearError } from '../../store/slices/authSlice';
 
 export function LoginForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const loading = useSelector(selectAuthLoading);
+    const error = useSelector(selectAuthError);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
-        setLoading(true);
+        dispatch(clearError());
 
-        try {
-            await login(email, password);
+        const result = await dispatch(login({ email, password }));
+        if (!result.error) {
             navigate('/dashboard');
-        } catch (err) {
-            setError(err.response?.data?.detail || 'Login failed');
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -107,10 +103,11 @@ export function RegisterForm() {
         first_name: '',
         last_name: '',
     });
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-    const { register } = useAuth();
+    const [localError, setLocalError] = useState('');
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const loading = useSelector(selectAuthLoading);
+    const error = useSelector(selectAuthError);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -118,28 +115,17 @@ export function RegisterForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
+        setLocalError('');
+        dispatch(clearError());
 
         if (formData.password !== formData.password2) {
-            setError('Passwords do not match');
+            setLocalError('Passwords do not match');
             return;
         }
 
-        setLoading(true);
-
-        try {
-            await register(formData);
+        const result = await dispatch(register(formData));
+        if (!result.error) {
             navigate('/profile/setup');
-        } catch (err) {
-            const errors = err.response?.data;
-            if (errors) {
-                const firstError = Object.values(errors)[0];
-                setError(Array.isArray(firstError) ? firstError[0] : firstError);
-            } else {
-                setError('Registration failed');
-            }
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -149,7 +135,7 @@ export function RegisterForm() {
                 <h1 className="auth-title">Create Account</h1>
                 <p className="auth-subtitle">Start generating AI-powered resumes</p>
 
-                {error && <div className="auth-error">{error}</div>}
+                {(error || localError) && <div className="auth-error">{error || localError}</div>}
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-row">

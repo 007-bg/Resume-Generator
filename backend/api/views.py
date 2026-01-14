@@ -144,3 +144,110 @@ class CritiqueResultViewSet(viewsets.ReadOnlyModelViewSet):
         critique = get_object_or_404(CritiqueResult, task_id=task_id)
         serializer = self.get_serializer(critique)
         return Response(serializer.data)
+
+
+# ===== Job Application ViewSet =====
+
+from rest_framework.permissions import IsAuthenticated
+from .models import JobApplication
+from .serializers import (
+    JobApplicationSerializer,
+    JobApplicationListSerializer,
+    JobApplicationStatusSerializer
+)
+
+
+class JobApplicationViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing job applications.
+    
+    Endpoints:
+    - GET /api/applications/ - List user's job applications
+    - POST /api/applications/ - Create a new application
+    - GET /api/applications/{id}/ - Retrieve application details
+    - PUT/PATCH /api/applications/{id}/ - Update application
+    - DELETE /api/applications/{id}/ - Delete application
+    - POST /api/applications/{id}/update_status/ - Update status only
+    - GET /api/applications/stats/ - Get application statistics
+    - GET /api/applications/by_status/ - Get applications grouped by status
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return JobApplication.objects.filter(user=self.request.user)
+    
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return JobApplicationListSerializer
+        return JobApplicationSerializer
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+    
+    @action(detail=True, methods=['post'])
+    def update_status(self, request, pk=None):
+        """Update only the status of an application."""
+        application = self.get_object()
+        serializer = JobApplicationStatusSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        old_status = application.status
+        application.status = serializer.validated_data['status']
+        
+        if serializer.validated_data.get('notes'):
+            application.notes += f"\n\n[{old_status} → {application.status}]: {serializer.validated_data['notes']}"
+        
+        application.save()
+        
+        return Response(JobApplicationSerializer(application).data)
+    
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Get statistics about user's job applications."""
+        queryset = self.get_queryset()
+        
+        # Count by status
+        status_counts = {}
+        for status_choice in JobApplication.Status.choices:
+            status_value = status_choice[0]
+            status_counts[status_value] = queryset.filter(status=status_value).count()
+        
+        # Calculate additional stats
+        total = queryset.count()
+        active = queryset.exclude(
+            status__in=['ACCEPTED', 'REJECTED', 'WITHDRAWN']
+        ).count()
+        
+        return Response({
+            'total': total,
+            'active': active,
+            'by_status': status_counts,
+            'favorites': queryset.filter(is_favorite=True).count()
+        })
+    
+    @action(detail=False, methods=['get'])
+    def by_status(self, request):
+        """Get applications grouped by status (for Kanban view)."""
+        queryset = self.get_queryset()
+        
+        result = {}
+        for status_choice in JobApplication.Status.choices:
+            status_value = status_choice[0]
+            apps = queryset.filter(status=status_value)
+            result[status_value] = {
+                'label': status_choice[1],
+                'count': apps.count(),
+                'applications': JobApplicationListSerializer(apps[:20], many=True).data
+            }
+        
+        return Response(result)
+    
+    @action(detail=True, methods=['post'])
+    def toggle_favorite(self, request, pk=None):
+        """Toggle favorite status."""
+        application = self.get_object()
+        application.is_favorite = not application.is_favorite
+        application.save(update_fields=['is_favorite'])
+        
+        return Response({'is_favorite': application.is_favorite})
+

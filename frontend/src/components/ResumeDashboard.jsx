@@ -1,69 +1,53 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, FileText, Download, Trash2, Eye, Zap, Clock, CheckCircle, XCircle } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { Plus, FileText, Download, Eye, Zap, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectUser } from '../store/slices/authSlice';
+import { fetchResumes, generateResume, checkResumeStatus, selectResumes, selectResumesLoading, selectGenerating, selectResumesError, clearError } from '../store/slices/resumesSlice';
+import { selectIsProfileComplete, selectCompletionPercentage } from '../store/slices/profileSlice';
 import { generateResumePDF } from '../lib/pdfGenerator';
 
 function ResumeDashboard() {
-    const { api, user } = useAuth();
-    const [resumes, setResumes] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [error, setError] = useState(null);
+    const dispatch = useDispatch();
+    const user = useSelector(selectUser);
+    const resumes = useSelector(selectResumes);
+    const isLoading = useSelector(selectResumesLoading);
+    const generating = useSelector(selectGenerating);
+    const error = useSelector(selectResumesError);
+    const isProfileComplete = useSelector(selectIsProfileComplete);
+    const completionPercentage = useSelector(selectCompletionPercentage);
+
     const [showGenerateModal, setShowGenerateModal] = useState(false);
 
     useEffect(() => {
-        loadResumes();
-    }, []);
+        dispatch(fetchResumes());
+    }, [dispatch]);
 
-    const loadResumes = async () => {
-        try {
-            setIsLoading(true);
-            // Fetch user's resumes
-            const response = await api.get('/candidates/', { params: { user_id: user?.id } });
-            setResumes(response.data.results || response.data || []);
-        } catch (err) {
-            console.error('Failed to load resumes:', err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    // Poll for generating resume status
+    useEffect(() => {
+        if (!generating) return;
 
-    const handleGenerate = async (jobDescription, title) => {
-        try {
-            setIsGenerating(true);
-            const response = await api.post('/agents/generate/', {
-                job_description: jobDescription,
-                title: title || `Resume - ${new Date().toLocaleDateString()}`
-            });
-
-            setShowGenerateModal(false);
-
-            // Poll for completion
-            pollResumeStatus(response.data.resume_id);
-        } catch (err) {
-            setError(err.response?.data?.error || 'Generation failed');
-        } finally {
-            setIsGenerating(false);
-        }
-    };
-
-    const pollResumeStatus = async (resumeId) => {
-        const poll = setInterval(async () => {
-            try {
-                const response = await api.get(`/agents/status/${resumeId}/`);
-
-                if (response.data.status === 'COMPLETED' || response.data.status === 'FAILED') {
-                    clearInterval(poll);
-                    loadResumes();
+        const poll = setInterval(() => {
+            dispatch(checkResumeStatus(generating)).then((result) => {
+                if (result.payload?.status === 'COMPLETED' || result.payload?.status === 'FAILED') {
+                    dispatch(fetchResumes());
                 }
-            } catch (err) {
-                clearInterval(poll);
-            }
+            });
         }, 3000);
 
-        // Stop after 5 minutes
-        setTimeout(() => clearInterval(poll), 300000);
+        return () => clearInterval(poll);
+    }, [generating, dispatch]);
+
+    const handleGenerate = async (jobDescription, title) => {
+        dispatch(clearError());
+        const result = await dispatch(generateResume({
+            title: title || `Resume - ${new Date().toLocaleDateString()}`,
+            job_description: jobDescription
+        }));
+
+        if (!result.error) {
+            setShowGenerateModal(false);
+        }
     };
 
     const handleDownloadPDF = async (resume) => {
@@ -73,7 +57,6 @@ function ResumeDashboard() {
             });
         } catch (err) {
             console.error('PDF generation failed:', err);
-            setError('Failed to generate PDF');
         }
     };
 
@@ -94,9 +77,6 @@ function ResumeDashboard() {
         return 'score-poor';
     };
 
-    const profile = user?.profile;
-    const isProfileComplete = profile?.is_complete;
-
     return (
         <div>
             <div className="flex items-center justify-between mb-lg">
@@ -110,12 +90,9 @@ function ResumeDashboard() {
                 </div>
 
                 {isProfileComplete ? (
-                    <button
-                        className="btn btn-primary"
-                        onClick={() => setShowGenerateModal(true)}
-                    >
-                        <Zap size={18} />
-                        Generate Resume
+                    <button className="btn btn-primary" onClick={() => setShowGenerateModal(true)} disabled={!!generating}>
+                        {generating ? <span className="spinner" /> : <Zap size={18} />}
+                        {generating ? 'Generating...' : 'Generate Resume'}
                     </button>
                 ) : (
                     <Link to="/profile/setup" className="btn btn-primary">
@@ -130,7 +107,7 @@ function ResumeDashboard() {
                         <strong>Profile Incomplete:</strong> Complete your profile to generate AI-powered resumes.
                     </p>
                     <Link to="/profile/setup" className="btn btn-primary mt-md">
-                        Complete Profile ({profile?.completion_percentage || 0}%)
+                        Complete Profile ({completionPercentage || 0}%)
                     </Link>
                 </div>
             )}
@@ -159,10 +136,7 @@ function ResumeDashboard() {
                         Generate your first AI-powered resume
                     </p>
                     {isProfileComplete && (
-                        <button
-                            className="btn btn-primary"
-                            onClick={() => setShowGenerateModal(true)}
-                        >
+                        <button className="btn btn-primary" onClick={() => setShowGenerateModal(true)}>
                             <Zap size={18} />
                             Generate Resume
                         </button>
@@ -190,10 +164,7 @@ function ResumeDashboard() {
 
                             {resume.status === 'COMPLETED' && (
                                 <div className="flex items-center gap-sm mt-lg">
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={() => handleDownloadPDF(resume)}
-                                    >
+                                    <button className="btn btn-primary" onClick={() => handleDownloadPDF(resume)}>
                                         <Download size={16} />
                                         Download PDF
                                     </button>
@@ -219,7 +190,7 @@ function ResumeDashboard() {
                 <GenerateModal
                     onClose={() => setShowGenerateModal(false)}
                     onGenerate={handleGenerate}
-                    isGenerating={isGenerating}
+                    isGenerating={!!generating}
                 />
             )}
         </div>
@@ -272,21 +243,9 @@ function GenerateModal({ onClose, onGenerate, isGenerating }) {
                     </div>
 
                     <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" onClick={onClose}>
-                            Cancel
-                        </button>
+                        <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
                         <button type="submit" className="btn btn-primary" disabled={isGenerating}>
-                            {isGenerating ? (
-                                <>
-                                    <span className="spinner" />
-                                    Generating...
-                                </>
-                            ) : (
-                                <>
-                                    <Zap size={18} />
-                                    Generate Resume
-                                </>
-                            )}
+                            {isGenerating ? <><span className="spinner" /> Generating...</> : <><Zap size={18} /> Generate Resume</>}
                         </button>
                     </div>
                 </form>
